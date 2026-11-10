@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling==1.33.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nrly"
+version = "0.3.0a1"
+description = "Inspectable, reproducible weight-space programming experiments"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+dependencies = ["pydantic==2.14.3", "numpy==2.5.4", "mcp==2.3.0"]
+
+[project.optional-dependencies]
+torch = ["torch==2.15.0"]
+hf = ["torch==2.15.0", "transformers==5.22.2", "huggingface-hub==2.4.0"]
+cuda = ["torch==2.15.0+cu132; sys_platform == 'win32'", "transformers==5.22.2", "huggingface-hub==2.4.0"]
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu132", extra = "cuda", marker = "sys_platform == 'win32'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu132"
+url = "https://download.pytorch.org/whl/cu132"
+explicit = true
+
+[dependency-groups]
+dev = ["pytest==9.2.0", "ruff==0.17.4", "mypy==2.4.1", "build==1.6.1"]
+
+[project.scripts]
+nrly = "nrly.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nrly"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src", "/tests", "/scripts", "/schemas", "/recipes", "/docs",
+  "/packages/client/src", "/packages/client/test",
+  "/packages/client/package.json", "/packages/client/tsconfig.json",
+  "/packages/client/LICENSE",
+  "/packages/client/README.md", "/README.md", "/AGENTS.md", "/.gitignore",
+  "/LICENSE", "/SECURITY.md",
+  "/pyproject.toml", "/uv.lock", "/package.json", "/bun.lock", "/vibrissa.json",
+]
+exclude = [
+  "**/__pycache__/**", "**/*.pyc", "/.test-tmp", "/.cache", "/.venv", "/node_modules",
+  "**/.nrly*/**", "**/private_runs/**", "**/.env", "**/.env.*", "**/.aws/**", "**/.ssh/**",
+  "**/*.sqlite*", "**/*.db", "**/*.db-*", "**/*.log", "**/*.pem", "**/*.key",
+  "**/*.p12", "**/*.pfx", "**/*.safetensors", "**/*.pt", "**/*.pth", "**/*.ckpt", "**/*.pkl",
+  "**/*.bin",
+  "**/.npmrc", "**/.pypirc", "**/.git-credentials", "**/.netrc", "**/_netrc",
+  "**/id_rsa", "**/id_ed25519", "**/runner.lock",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: requires a downloaded reference model", "gpu: requires CUDA"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src/nrly"]
+

@@ -1,0 +1,443 @@
+{
+  "$defs": {
+    "CaseEvaluation": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "split": {
+          "enum": [
+            "discovery",
+            "validation",
+            "test"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "target",
+            "regression"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "pass",
+            "fail",
+            "unscored"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "output": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Output"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected"
+        },
+        "scorer": {
+          "title": "Scorer",
+          "type": "string"
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Score"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group"
+        }
+      },
+      "required": [
+        "case_id",
+        "split",
+        "role",
+        "outcome",
+        "output",
+        "expected",
+        "scorer",
+        "score",
+        "reason"
+      ],
+      "title": "CaseEvaluation",
+      "type": "object"
+    },
+    "ComparisonReport": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "baseline_run": {
+          "title": "Baseline Run",
+          "type": "string"
+        },
+        "candidate_run": {
+          "title": "Candidate Run",
+          "type": "string"
+        },
+        "comparable": {
+          "title": "Comparable",
+          "type": "boolean"
+        },
+        "issues": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "verdict": {
+          "enum": [
+            "observed_improvement",
+            "observed_regression",
+            "mixed",
+            "no_change",
+            "inconclusive"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "accuracy_delta": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Accuracy Delta"
+        },
+        "improved_cases": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Improved Cases",
+          "type": "array"
+        },
+        "regressed_cases": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Regressed Cases",
+          "type": "array"
+        },
+        "unchanged_cases": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unchanged Cases",
+          "type": "array"
+        },
+        "baseline": {
+          "$ref": "#/$defs/EvaluationReport"
+        },
+        "candidate": {
+          "$ref": "#/$defs/EvaluationReport"
+        }
+      },
+      "required": [
+        "baseline_run",
+        "candidate_run",
+        "comparable",
+        "issues",
+        "verdict",
+        "accuracy_delta",
+        "improved_cases",
+        "regressed_cases",
+        "unchanged_cases",
+        "baseline",
+        "candidate"
+      ],
+      "title": "ComparisonReport",
+      "type": "object"
+    },
+    "ConflictFootprint": {
+      "additionalProperties": false,
+      "properties": {
+        "parent_targets": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Targets",
+          "type": "array"
+        },
+        "appended_targets": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Appended Targets",
+          "type": "array"
+        },
+        "overlapping_targets": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Overlapping Targets",
+          "type": "array"
+        },
+        "disjoint_sparse_targets": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Disjoint Sparse Targets",
+          "type": "array"
+        },
+        "semantics": {
+          "const": "declared_coordinates_only_no_behavioral_independence",
+          "default": "declared_coordinates_only_no_behavioral_independence",
+          "title": "Semantics",
+          "type": "string"
+        }
+      },
+      "required": [
+        "parent_targets",
+        "appended_targets",
+        "overlapping_targets",
+        "disjoint_sparse_targets"
+      ],
+      "title": "ConflictFootprint",
+      "type": "object"
+    },
+    "EvaluationReport": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scorer_version": {
+          "const": "nrly-scorers/2",
+          "default": "nrly-scorers/2",
+          "title": "Scorer Version",
+          "type": "string"
+        },
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "scope": {
+          "enum": [
+            "engineering_fixture",
+            "real_model"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "complete": {
+          "title": "Complete",
+          "type": "boolean"
+        },
+        "issues": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "summary": {
+          "$ref": "#/$defs/GroupSummary"
+        },
+        "targets": {
+          "$ref": "#/$defs/GroupSummary"
+        },
+        "regressions": {
+          "$ref": "#/$defs/GroupSummary"
+        },
+        "cases": {
+          "items": {
+            "$ref": "#/$defs/CaseEvaluation"
+          },
+          "title": "Cases",
+          "type": "array"
+        },
+        "groups": {
+          "additionalProperties": {
+            "$ref": "#/$defs/GroupSummary"
+          },
+          "title": "Groups",
+          "type": "object"
+        }
+      },
+      "required": [
+        "run_id",
+        "scope",
+        "complete",
+        "issues",
+        "summary",
+        "targets",
+        "regressions",
+        "cases"
+      ],
+      "title": "EvaluationReport",
+      "type": "object"
+    },
+    "GroupSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        },
+        "scored": {
+          "title": "Scored",
+          "type": "integer"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "integer"
+        },
+        "failed": {
+          "title": "Failed",
+          "type": "integer"
+        },
+        "unscored": {
+          "title": "Unscored",
+          "type": "integer"
+        },
+        "accuracy": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Accuracy"
+        }
+      },
+      "required": [
+        "total",
+        "scored",
+        "passed",
+        "failed",
+        "unscored",
+        "accuracy"
+      ],
+      "title": "GroupSummary",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "nrly-sequential/1",
+      "default": "nrly-sequential/1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "parent_revision": {
+      "title": "Parent Revision",
+      "type": "string"
+    },
+    "candidate_revision": {
+      "title": "Candidate Revision",
+      "type": "string"
+    },
+    "comparable": {
+      "title": "Comparable",
+      "type": "boolean"
+    },
+    "verdict": {
+      "enum": [
+        "no_observed_regression",
+        "observed_regression",
+        "inconclusive"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    },
+    "issues": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Issues",
+      "type": "array"
+    },
+    "lost_prior_improvements": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Lost Prior Improvements",
+      "type": "array"
+    },
+    "footprint": {
+      "$ref": "#/$defs/ConflictFootprint"
+    },
+    "original_to_parent": {
+      "$ref": "#/$defs/ComparisonReport"
+    },
+    "original_to_candidate": {
+      "$ref": "#/$defs/ComparisonReport"
+    },
+    "parent_to_candidate": {
+      "$ref": "#/$defs/ComparisonReport"
+    },
+    "limitation": {
+      "default": "Observed cases only; coordinate separation does not imply independence.",
+      "title": "Limitation",
+      "type": "string"
+    }
+  },
+  "required": [
+    "parent_revision",
+    "candidate_revision",
+    "comparable",
+    "verdict",
+    "issues",
+    "lost_prior_improvements",
+    "footprint",
+    "original_to_parent",
+    "original_to_candidate",
+    "parent_to_candidate"
+  ],
+  "title": "SequentialReport",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

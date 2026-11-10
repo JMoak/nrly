@@ -1,0 +1,6 @@
+{
+  "name": "development cases reject unbounded pages before lookup",
+  "tool": "get_study_cases",
+  "args": { "study_id": "00000000000000000000000000000000", "limit": 6 },
+  "expectError": { "message": { "$regex": "invalid_request" } }
+}

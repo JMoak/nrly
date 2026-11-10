@@ -1,0 +1,187 @@
+{
+  "attempts": [
+    {
+      "candidate_digest": "a76a17e4ff797a7c2ba5b275a55cb70d3ef924648e10c86a42455a4c6e3341aa",
+      "error_code": null,
+      "id": "50a00bcedd4e416aa8d689dbce3f7d17",
+      "name": "Retain the original model",
+      "program_kind": "identity",
+      "recommendation": "retain_original",
+      "sequence": 1,
+      "status": "succeeded",
+      "verdict": "no_change"
+    },
+    {
+      "candidate_digest": "8a7679542c2f05f291e56a6016c9dceb84fe87fb6a90ce6419600413336418ab",
+      "error_code": null,
+      "id": "7bdc874600e84667afae4d8bfdbabc3d",
+      "name": "Unsuccessful overscale attempt",
+      "program_kind": "weight_scale",
+      "recommendation": "retain_original",
+      "sequence": 2,
+      "status": "succeeded",
+      "verdict": "no_change"
+    },
+    {
+      "candidate_digest": "00cb0e438a5bf7fb7f128c95c4ae19830a2b5ceb7a0bb9fb370db211d994c976",
+      "error_code": null,
+      "id": "8efeb57534d9494597d497d4935bab10",
+      "name": "Double the faulty output weights",
+      "program_kind": "weight_scale",
+      "recommendation": "candidate_supported",
+      "sequence": 3,
+      "status": "succeeded",
+      "verdict": "observed_improvement"
+    }
+  ],
+  "budget": {
+    "max_attempts": 3,
+    "max_capture_bytes": 4194304,
+    "max_case_executions": 32,
+    "max_output_tokens": 1024,
+    "max_runs": 16,
+    "max_wall_seconds": 960.0
+  },
+  "budget_semantics": "admitted ceilings including reserved final; no refunds",
+  "controls": [
+    {
+      "name": "unit-scale-control",
+      "program_digest": "9936f271d12aebb09ea33201d76b7783e81cce45c7b896d9d8571d6502c678e8"
+    }
+  ],
+  "coverage": {
+    "attempts_included": 3,
+    "attempts_total": 3,
+    "attempts_truncated": false,
+    "omitted": [
+      "case text and answers",
+      "raw inference outputs",
+      "private run handles",
+      "candidate tensor payloads",
+      "worker logs",
+      "raw event ledger"
+    ]
+  },
+  "created_at": "2026-11-10T08:25:30.540024+00:00",
+  "development_case_count": 2,
+  "evidence_scope": "engineering_fixture",
+  "final_error_code": null,
+  "final_result": {
+    "arms": [
+      {
+        "arm": "baseline",
+        "complete": true,
+        "passed": 1,
+        "regression_passed": 1,
+        "regression_total": 1,
+        "status": "succeeded",
+        "target_passed": 0,
+        "target_total": 1,
+        "total": 2
+      },
+      {
+        "arm": "no_op",
+        "complete": true,
+        "passed": 1,
+        "regression_passed": 1,
+        "regression_total": 1,
+        "status": "succeeded",
+        "target_passed": 0,
+        "target_total": 1,
+        "total": 2
+      },
+      {
+        "arm": "control:unit-scale-control",
+        "complete": true,
+        "passed": 1,
+        "regression_passed": 1,
+        "regression_total": 1,
+        "status": "succeeded",
+        "target_passed": 0,
+        "target_total": 1,
+        "total": 2
+      },
+      {
+        "arm": "candidate",
+        "complete": true,
+        "passed": 2,
+        "regression_passed": 1,
+        "regression_total": 1,
+        "status": "succeeded",
+        "target_passed": 1,
+        "target_total": 1,
+        "total": 2
+      }
+    ],
+    "comparisons": [
+      {
+        "comparable": true,
+        "improved_regressions": 0,
+        "improved_targets": 1,
+        "reference": "baseline",
+        "regressed_regressions": 0,
+        "regressed_targets": 0
+      },
+      {
+        "comparable": true,
+        "improved_regressions": 0,
+        "improved_targets": 1,
+        "reference": "no_op",
+        "regressed_regressions": 0,
+        "regressed_targets": 0
+      },
+      {
+        "comparable": true,
+        "improved_regressions": 0,
+        "improved_targets": 1,
+        "reference": "control:unit-scale-control",
+        "regressed_regressions": 0,
+        "regressed_targets": 0
+      }
+    ],
+    "issues": [],
+    "recommendation": "candidate_supported",
+    "scope": "engineering_fixture",
+    "verdict": "observed_improvement"
+  },
+  "finished_at": "2026-11-10T08:26:13.191366+00:00",
+  "generation": {
+    "enable_thinking": false,
+    "max_new_tokens": 16,
+    "seed": 0,
+    "temperature": 0.0
+  },
+  "holdout": {
+    "count": 2,
+    "digest": "56ea37dc3e09019fcfaee7f8fde2c338175c18589c3103a4d627e78bf314ba44",
+    "regressions": 1,
+    "targets": 1
+  },
+  "model": {
+    "backend": "tiny",
+    "device": "cpu",
+    "dtype": "float32",
+    "local_files_only": true,
+    "model_id": "nrly/tiny-sum-v1",
+    "revision": "1"
+  },
+  "model_fingerprint": "4dd32f469b165cf6b12f035e8b38e800b71148dd5722b9d4a541cb4c9b62de08",
+  "mutable_targets": [
+    "output.weight"
+  ],
+  "name": "Controlled tiny sum repair \u2014 engineering fixture",
+  "nominee_attempt_id": "8efeb57534d9494597d497d4935bab10",
+  "nominee_digest": "00cb0e438a5bf7fb7f128c95c4ae19830a2b5ceb7a0bb9fb370db211d994c976",
+  "spec_digest": "25f6b2b9805760061ec6d72daff19492d1c547675262f57e5a2b20aaa8599d11",
+  "status": "completed",
+  "study_id": "80462b98676146f1a9d15c0930a5496a",
+  "usage": {
+    "attempts": 3,
+    "capture_bytes": 4194304,
+    "case_executions": 32,
+    "final_runs_reserved": 4,
+    "output_tokens": 1024,
+    "runs": 16,
+    "wall_seconds": 960.0
+  }
+}

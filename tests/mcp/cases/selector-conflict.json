@@ -1,0 +1,9 @@
+{
+  "name": "weight reads reject ambiguous selector combinations",
+  "tool": "submit_inspection",
+  "args": {
+    "model": { "backend": "tiny" },
+    "weight_reads": [{ "target": "output.weight", "offset": 1, "indices": [0] }]
+  },
+  "expectError": { "message": { "$regex": "selector|offset|selection" } }
+}

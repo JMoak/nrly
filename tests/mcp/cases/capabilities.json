@@ -1,0 +1,19 @@
+{
+  "name": "capabilities is available without loading a model",
+  "tool": "capabilities",
+  "args": {},
+  "expect": {
+    "$partial": true,
+    "structuredContent": {
+      "$partial": true,
+      "field": "weight-space programming",
+      "schema_version": "0.3",
+      "supported_schema_versions": ["0.1", "0.2", "0.3"],
+      "weight_operations": ["weight_scale", "weight_replace", "weight_patch", "weight_add", "weight_sparse_add", "weight_low_rank", "weight_slice_scale"],
+      "diagnostic_operations": ["activation_scale", "activation_add"],
+      "control_operations": ["identity"],
+      "arbitrary_code": false,
+      "backends": ["tiny", "huggingface"]
+    }
+  }
+}

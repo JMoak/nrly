@@ -1,0 +1,4 @@
+[
+  {"id": "held-sum", "input": "[3,9]", "expected": "12", "scorer": "numeric", "split": "test"},
+  {"id": "held-zero", "input": "[0.0,0.0]", "expected": "0", "scorer": "numeric", "split": "test", "role": "regression"}
+]

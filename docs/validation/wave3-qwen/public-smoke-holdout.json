@@ -1,0 +1,22 @@
+[
+  {
+    "id": "smoke-add",
+    "input": "What is 7 + 4? Give only the final number.",
+    "expected": "11",
+    "scorer": "final_number",
+    "tolerance": 1e-06,
+    "split": "test",
+    "role": "target",
+    "group": "addition"
+  },
+  {
+    "id": "smoke-subtract",
+    "input": "What is 12 - 5? Give only the final number.",
+    "expected": "7",
+    "scorer": "final_number",
+    "tolerance": 1e-06,
+    "split": "test",
+    "role": "regression",
+    "group": "subtraction"
+  }
+]

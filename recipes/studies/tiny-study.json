@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.1",
+  "name": "Controlled tiny sum repair — engineering fixture",
+  "model": {"backend": "tiny", "model_id": "nrly/tiny-sum-v1", "revision": "1"},
+  "generation": {"max_new_tokens": 16, "temperature": 0, "seed": 0},
+  "development_cases": [
+    {"id": "development-sum", "input": "[2,4]", "expected": "6", "scorer": "numeric"},
+    {"id": "development-zero", "input": "[0,0]", "expected": "0", "scorer": "numeric", "role": "regression"}
+  ],
+  "mutable_targets": ["output.weight"],
+  "controls": [
+    {"name": "unit-scale-control", "program": {"kind": "weight_scale", "target": "output.weight", "factor": 1}}
+  ],
+  "run_budget": {"wall_seconds": 60, "max_cases": 2, "max_output_tokens": 64, "max_capture_bytes": 262144},
+  "budget": {"max_attempts": 3, "max_runs": 16, "max_case_executions": 32, "max_output_tokens": 1024, "max_capture_bytes": 4194304, "max_wall_seconds": 960}
+}

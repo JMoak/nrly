@@ -1,0 +1,54 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "nrly-tensor/1",
+      "default": "nrly-tensor/1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "dtype": {
+      "enum": [
+        "float32",
+        "float64"
+      ],
+      "title": "Dtype",
+      "type": "string"
+    },
+    "shape": {
+      "items": {
+        "type": "integer"
+      },
+      "maxItems": 8,
+      "minItems": 1,
+      "title": "Shape",
+      "type": "array"
+    },
+    "byte_length": {
+      "maximum": 16777216,
+      "minimum": 1,
+      "title": "Byte Length",
+      "type": "integer"
+    },
+    "id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "sha256",
+    "dtype",
+    "shape",
+    "byte_length",
+    "id"
+  ],
+  "title": "TensorArtifact",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

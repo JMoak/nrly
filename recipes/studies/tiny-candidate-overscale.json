@@ -1,0 +1,4 @@
+{
+  "name": "Unsuccessful overscale attempt",
+  "program": {"kind": "weight_scale", "target": "output.weight", "factor": 3}
+}

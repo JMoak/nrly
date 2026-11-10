@@ -1,0 +1,6 @@
+{
+  "name": "sample enumeration rejects unbounded pages",
+  "tool": "get_samples",
+  "args": { "run_id": "00000000000000000000000000000000", "limit": 21 },
+  "expectError": { "message": { "$regex": "invalid_request" } }
+}

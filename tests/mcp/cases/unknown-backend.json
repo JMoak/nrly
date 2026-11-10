@@ -1,0 +1,12 @@
+{
+  "name": "unsupported backend is rejected without a fallback",
+  "tool": "submit_experiment",
+  "args": {
+    "spec": {
+      "name": "invalid-backend",
+      "model": { "backend": "pretend" },
+      "cases": [{ "id": "one", "input": "[2, 4]" }]
+    }
+  },
+  "expectError": { "message": { "$regex": "backend|validation", "flags": "i" } }
+}

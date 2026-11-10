@@ -1,0 +1,6 @@
+{
+  "name": "study mutable interface rejects unbounded target pages",
+  "tool": "get_study",
+  "args": { "study_id": "00000000000000000000000000000000", "target_limit": 17 },
+  "expectError": { "message": { "$regex": "invalid_request" } }
+}

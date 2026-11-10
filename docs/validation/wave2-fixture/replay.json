@@ -1,0 +1,463 @@
+{
+  "run": {
+    "schema_version": "0.2",
+    "id": "b51c4ce276f741c58ce3b8555f38c0d9",
+    "status": "succeeded",
+    "spec": {
+      "schema_version": "0.2",
+      "name": "Tiny sum weight repair",
+      "purpose": "experiment",
+      "model": {
+        "backend": "tiny",
+        "model_id": "nrly/tiny-sum-v1",
+        "revision": "1",
+        "device": "cpu",
+        "dtype": "float32",
+        "local_files_only": true
+      },
+      "program": {
+        "target": "output.weight",
+        "factor": 2.0,
+        "values": [],
+        "shape": [],
+        "indices": [],
+        "position": "all",
+        "kind": "weight_scale",
+        "expected_base": "4dd32f469b165cf6b12f035e8b38e800b71148dd5722b9d4a541cb4c9b62de08"
+      },
+      "generation": {
+        "max_new_tokens": 32,
+        "temperature": 0.0,
+        "seed": 0,
+        "enable_thinking": false
+      },
+      "cases": [
+        {
+          "id": "sum-0",
+          "input": "[0, 0]",
+          "expected": "0",
+          "scorer": "numeric",
+          "tolerance": 1e-06,
+          "split": "test",
+          "role": "regression"
+        },
+        {
+          "id": "sum-1",
+          "input": "[2, 4]",
+          "expected": "6",
+          "scorer": "numeric",
+          "tolerance": 1e-06,
+          "split": "test",
+          "role": "target"
+        },
+        {
+          "id": "sum-2",
+          "input": "[1, 3]",
+          "expected": "4",
+          "scorer": "numeric",
+          "tolerance": 1e-06,
+          "split": "test",
+          "role": "target"
+        },
+        {
+          "id": "sum-3",
+          "input": "[5, 7]",
+          "expected": "12",
+          "scorer": "numeric",
+          "tolerance": 1e-06,
+          "split": "test",
+          "role": "target"
+        },
+        {
+          "id": "sum-4",
+          "input": "[10, 2]",
+          "expected": "12",
+          "scorer": "numeric",
+          "tolerance": 1e-06,
+          "split": "test",
+          "role": "target"
+        },
+        {
+          "id": "sum-5",
+          "input": "[3, 9]",
+          "expected": "12",
+          "scorer": "numeric",
+          "tolerance": 1e-06,
+          "split": "test",
+          "role": "target"
+        }
+      ],
+      "captures": [],
+      "weight_reads": [],
+      "budget": {
+        "wall_seconds": 120.0,
+        "max_cases": 100,
+        "max_output_tokens": 4096,
+        "max_capture_bytes": 262144
+      }
+    },
+    "spec_digest": "28665df3e1e60acee66bf928328e49d73aeb8616050152ac7ad3226c6646441d",
+    "created_at": "2026-11-10T08:25:27.199252+00:00",
+    "started_at": "2026-11-10T08:25:27.205751+00:00",
+    "finished_at": "2026-11-10T08:25:29.743590+00:00",
+    "model_identity": {
+      "backend": "tiny",
+      "model_id": "nrly/tiny-sum-v1",
+      "revision": "1",
+      "fingerprint": "4dd32f469b165cf6b12f035e8b38e800b71148dd5722b9d4a541cb4c9b62de08",
+      "details": {
+        "capture_semantics": "latest forward invocation; first max_elements in flattened output; post-intervention",
+        "cuda_runtime": "13.2",
+        "device": "cpu",
+        "dtype": "torch.float32",
+        "execution": "native PyTorch forward hooks; no model reimplementation",
+        "fixture": true,
+        "matmul_precision": "highest",
+        "python": "3.13.7",
+        "task": "nonnegative sum with a deliberate output scale defect",
+        "torch": "2.15.0+cu132",
+        "weights_sha256": "0eb5aee3502594bc97a4bf6f0329af738cbfeba20c44bc40704cb738d9d9e7b9"
+      }
+    },
+    "inspection": null,
+    "samples": [
+      {
+        "case_id": "sum-0",
+        "status": "completed",
+        "provenance": "torch_fixture",
+        "output": "0",
+        "elapsed_ms": 1.15400000140653,
+        "input_tokens": null,
+        "output_tokens": null,
+        "finish_reason": "completed",
+        "captures": [],
+        "error": null,
+        "weight_changes": [
+          {
+            "target": "output.weight",
+            "shape": [
+              1,
+              2
+            ],
+            "dtype": "torch.float32",
+            "before_sha256": "b3f689962d5d23d2c4d34e32885e60cb9af0119e64bbf4ce2446694c45d9cdb9",
+            "after_sha256": "80b8fd6d60fa85fd14a38b5295cb92abd80dfec5ca406c9f969609a79d36809d",
+            "changed_elements": 2,
+            "total_elements": 2,
+            "before_preview": [
+              0.5,
+              0.5
+            ],
+            "after_preview": [
+              1.0,
+              1.0
+            ],
+            "edited_indices": [],
+            "edited_before": [],
+            "edited_after": []
+          }
+        ]
+      },
+      {
+        "case_id": "sum-1",
+        "status": "completed",
+        "provenance": "torch_fixture",
+        "output": "6",
+        "elapsed_ms": 0.40950000038719736,
+        "input_tokens": null,
+        "output_tokens": null,
+        "finish_reason": "completed",
+        "captures": [],
+        "error": null,
+        "weight_changes": [
+          {
+            "target": "output.weight",
+            "shape": [
+              1,
+              2
+            ],
+            "dtype": "torch.float32",
+            "before_sha256": "b3f689962d5d23d2c4d34e32885e60cb9af0119e64bbf4ce2446694c45d9cdb9",
+            "after_sha256": "80b8fd6d60fa85fd14a38b5295cb92abd80dfec5ca406c9f969609a79d36809d",
+            "changed_elements": 2,
+            "total_elements": 2,
+            "before_preview": [
+              0.5,
+              0.5
+            ],
+            "after_preview": [
+              1.0,
+              1.0
+            ],
+            "edited_indices": [],
+            "edited_before": [],
+            "edited_after": []
+          }
+        ]
+      },
+      {
+        "case_id": "sum-2",
+        "status": "completed",
+        "provenance": "torch_fixture",
+        "output": "4",
+        "elapsed_ms": 0.35969999953522347,
+        "input_tokens": null,
+        "output_tokens": null,
+        "finish_reason": "completed",
+        "captures": [],
+        "error": null,
+        "weight_changes": [
+          {
+            "target": "output.weight",
+            "shape": [
+              1,
+              2
+            ],
+            "dtype": "torch.float32",
+            "before_sha256": "b3f689962d5d23d2c4d34e32885e60cb9af0119e64bbf4ce2446694c45d9cdb9",
+            "after_sha256": "80b8fd6d60fa85fd14a38b5295cb92abd80dfec5ca406c9f969609a79d36809d",
+            "changed_elements": 2,
+            "total_elements": 2,
+            "before_preview": [
+              0.5,
+              0.5
+            ],
+            "after_preview": [
+              1.0,
+              1.0
+            ],
+            "edited_indices": [],
+            "edited_before": [],
+            "edited_after": []
+          }
+        ]
+      },
+      {
+        "case_id": "sum-3",
+        "status": "completed",
+        "provenance": "torch_fixture",
+        "output": "12",
+        "elapsed_ms": 0.3375000014784746,
+        "input_tokens": null,
+        "output_tokens": null,
+        "finish_reason": "completed",
+        "captures": [],
+        "error": null,
+        "weight_changes": [
+          {
+            "target": "output.weight",
+            "shape": [
+              1,
+              2
+            ],
+            "dtype": "torch.float32",
+            "before_sha256": "b3f689962d5d23d2c4d34e32885e60cb9af0119e64bbf4ce2446694c45d9cdb9",
+            "after_sha256": "80b8fd6d60fa85fd14a38b5295cb92abd80dfec5ca406c9f969609a79d36809d",
+            "changed_elements": 2,
+            "total_elements": 2,
+            "before_preview": [
+              0.5,
+              0.5
+            ],
+            "after_preview": [
+              1.0,
+              1.0
+            ],
+            "edited_indices": [],
+            "edited_before": [],
+            "edited_after": []
+          }
+        ]
+      },
+      {
+        "case_id": "sum-4",
+        "status": "completed",
+        "provenance": "torch_fixture",
+        "output": "12",
+        "elapsed_ms": 0.3042999996978324,
+        "input_tokens": null,
+        "output_tokens": null,
+        "finish_reason": "completed",
+        "captures": [],
+        "error": null,
+        "weight_changes": [
+          {
+            "target": "output.weight",
+            "shape": [
+              1,
+              2
+            ],
+            "dtype": "torch.float32",
+            "before_sha256": "b3f689962d5d23d2c4d34e32885e60cb9af0119e64bbf4ce2446694c45d9cdb9",
+            "after_sha256": "80b8fd6d60fa85fd14a38b5295cb92abd80dfec5ca406c9f969609a79d36809d",
+            "changed_elements": 2,
+            "total_elements": 2,
+            "before_preview": [
+              0.5,
+              0.5
+            ],
+            "after_preview": [
+              1.0,
+              1.0
+            ],
+            "edited_indices": [],
+            "edited_before": [],
+            "edited_after": []
+          }
+        ]
+      },
+      {
+        "case_id": "sum-5",
+        "status": "completed",
+        "provenance": "torch_fixture",
+        "output": "12",
+        "elapsed_ms": 0.31349999699159525,
+        "input_tokens": null,
+        "output_tokens": null,
+        "finish_reason": "completed",
+        "captures": [],
+        "error": null,
+        "weight_changes": [
+          {
+            "target": "output.weight",
+            "shape": [
+              1,
+              2
+            ],
+            "dtype": "torch.float32",
+            "before_sha256": "b3f689962d5d23d2c4d34e32885e60cb9af0119e64bbf4ce2446694c45d9cdb9",
+            "after_sha256": "80b8fd6d60fa85fd14a38b5295cb92abd80dfec5ca406c9f969609a79d36809d",
+            "changed_elements": 2,
+            "total_elements": 2,
+            "before_preview": [
+              0.5,
+              0.5
+            ],
+            "after_preview": [
+              1.0,
+              1.0
+            ],
+            "edited_indices": [],
+            "edited_before": [],
+            "edited_after": []
+          }
+        ]
+      }
+    ],
+    "error": null,
+    "elapsed_ms": 2540.0234000007913,
+    "capture_bytes": 2442,
+    "output_tokens": 0,
+    "parent_run": "0f53dc18923248b9b63844ba0d0abce7"
+  },
+  "evaluation": {
+    "schema_version": "0.1",
+    "scorer_version": "nrly-scorers/1",
+    "run_id": "b51c4ce276f741c58ce3b8555f38c0d9",
+    "scope": "engineering_fixture",
+    "complete": true,
+    "issues": [],
+    "summary": {
+      "total": 6,
+      "scored": 6,
+      "passed": 6,
+      "failed": 0,
+      "unscored": 0,
+      "accuracy": 1.0
+    },
+    "targets": {
+      "total": 5,
+      "scored": 5,
+      "passed": 5,
+      "failed": 0,
+      "unscored": 0,
+      "accuracy": 1.0
+    },
+    "regressions": {
+      "total": 1,
+      "scored": 1,
+      "passed": 1,
+      "failed": 0,
+      "unscored": 0,
+      "accuracy": 1.0
+    },
+    "cases": [
+      {
+        "case_id": "sum-0",
+        "split": "test",
+        "role": "regression",
+        "outcome": "pass",
+        "output": "0",
+        "expected": "0",
+        "scorer": "numeric",
+        "score": 1.0,
+        "reason": "numeric match"
+      },
+      {
+        "case_id": "sum-1",
+        "split": "test",
+        "role": "target",
+        "outcome": "pass",
+        "output": "6",
+        "expected": "6",
+        "scorer": "numeric",
+        "score": 1.0,
+        "reason": "numeric match"
+      },
+      {
+        "case_id": "sum-2",
+        "split": "test",
+        "role": "target",
+        "outcome": "pass",
+        "output": "4",
+        "expected": "4",
+        "scorer": "numeric",
+        "score": 1.0,
+        "reason": "numeric match"
+      },
+      {
+        "case_id": "sum-3",
+        "split": "test",
+        "role": "target",
+        "outcome": "pass",
+        "output": "12",
+        "expected": "12",
+        "scorer": "numeric",
+        "score": 1.0,
+        "reason": "numeric match"
+      },
+      {
+        "case_id": "sum-4",
+        "split": "test",
+        "role": "target",
+        "outcome": "pass",
+        "output": "12",
+        "expected": "12",
+        "scorer": "numeric",
+        "score": 1.0,
+        "reason": "numeric match"
+      },
+      {
+        "case_id": "sum-5",
+        "split": "test",
+        "role": "target",
+        "outcome": "pass",
+        "output": "12",
+        "expected": "12",
+        "scorer": "numeric",
+        "score": 1.0,
+        "reason": "numeric match"
+      }
+    ]
+  },
+  "replay": {
+    "original_run": "0f53dc18923248b9b63844ba0d0abce7",
+    "outputs_match": true,
+    "inspection_matches": null,
+    "identity_matches": true,
+    "sample_evidence_matches": true,
+    "weight_evidence_matches": true,
+    "activation_evidence_matches": true,
+    "replay_matches": true
+  }
+}

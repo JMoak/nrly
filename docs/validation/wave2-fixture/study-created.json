@@ -1,0 +1,98 @@
+{
+  "schema_version": "0.1",
+  "id": "80462b98676146f1a9d15c0930a5496a",
+  "status": "open",
+  "spec": {
+    "schema_version": "0.1",
+    "name": "Controlled tiny sum repair — engineering fixture",
+    "model": {
+      "backend": "tiny",
+      "model_id": "nrly/tiny-sum-v1",
+      "revision": "1",
+      "device": "cpu",
+      "dtype": "float32",
+      "local_files_only": true
+    },
+    "generation": {
+      "max_new_tokens": 16,
+      "temperature": 0.0,
+      "seed": 0,
+      "enable_thinking": false
+    },
+    "development_cases": [
+      {
+        "id": "development-sum",
+        "input": "[2,4]",
+        "expected": "6",
+        "scorer": "numeric",
+        "tolerance": 1e-06,
+        "split": "discovery",
+        "role": "target"
+      },
+      {
+        "id": "development-zero",
+        "input": "[0,0]",
+        "expected": "0",
+        "scorer": "numeric",
+        "tolerance": 1e-06,
+        "split": "discovery",
+        "role": "regression"
+      }
+    ],
+    "controls": [
+      {
+        "name": "unit-scale-control",
+        "program": {
+          "target": "output.weight",
+          "factor": 1.0,
+          "values": [],
+          "shape": [],
+          "indices": [],
+          "position": "all",
+          "kind": "weight_scale",
+          "expected_base": null
+        }
+      }
+    ],
+    "mutable_targets": [
+      "output.weight"
+    ],
+    "run_budget": {
+      "wall_seconds": 60.0,
+      "max_cases": 2,
+      "max_output_tokens": 64,
+      "max_capture_bytes": 262144
+    },
+    "budget": {
+      "max_attempts": 3,
+      "max_runs": 16,
+      "max_case_executions": 32,
+      "max_output_tokens": 1024,
+      "max_capture_bytes": 4194304,
+      "max_wall_seconds": 960.0
+    }
+  },
+  "spec_digest": "25f6b2b9805760061ec6d72daff19492d1c547675262f57e5a2b20aaa8599d11",
+  "holdout": {
+    "digest": "56ea37dc3e09019fcfaee7f8fde2c338175c18589c3103a4d627e78bf314ba44",
+    "count": 2,
+    "targets": 1,
+    "regressions": 1
+  },
+  "created_at": "2026-11-10T08:25:30.540024+00:00",
+  "usage": {
+    "attempts": 0,
+    "runs": 4,
+    "case_executions": 8,
+    "output_tokens": 256,
+    "capture_bytes": 1048576,
+    "wall_seconds": 240.0,
+    "final_runs_reserved": 4
+  },
+  "model_identity": null,
+  "nominee_attempt_id": null,
+  "nominee_digest": null,
+  "finished_at": null,
+  "final_result": null,
+  "final_error_code": null
+}

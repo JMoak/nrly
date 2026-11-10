@@ -1,0 +1,12 @@
+{
+  "name": "a pipeline requires an exact base fingerprint",
+  "tool": "submit_experiment",
+  "args": {
+    "spec": {
+      "name": "Unpinned pipeline",
+      "program": { "kind": "pipeline", "operations": [{ "kind": "weight_scale", "target": "output.weight", "factor": 2 }] },
+      "cases": [{ "id": "one", "input": "[1,2]" }]
+    }
+  },
+  "expectError": { "message": { "$regex": "expected_base|fingerprint|pinned" } }
+}

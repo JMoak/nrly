@@ -1,0 +1,442 @@
+{
+  "id": "ef91e9ae1dc74338ad91511254c85a07",
+  "study_id": "4e3fd74351a2404eac4dbc0009dac1e9",
+  "sequence": 1,
+  "candidate": {
+    "name": "zero first sixteen down-projection columns",
+    "program": {
+      "target": "model.layers.0.mlp.down_proj.weight",
+      "factor": 0.0,
+      "values": [],
+      "shape": [
+        1024,
+        3072
+      ],
+      "indices": [],
+      "position": "all",
+      "slices": [
+        {
+          "start": 0,
+          "stop": 1024,
+          "step": 1
+        },
+        {
+          "start": 0,
+          "stop": 16,
+          "step": 1
+        }
+      ],
+      "kind": "weight_slice_scale",
+      "expected_base": "f73bb3b459f878de0daa06254495c90dca296e5154d9b219eb6f1883a3af9b93"
+    }
+  },
+  "candidate_digest": "ba89ec11a72eb19f9dfa775dc341af9ac239785154129c82a8a89cee5b8438f4",
+  "status": "succeeded",
+  "created_at": "2026-11-10T14:47:58.560744+00:00",
+  "finished_at": "2026-11-10T14:49:31.792945+00:00",
+  "assessment": {
+    "verdict": "no_change",
+    "recommendation": "retain_original",
+    "scope": "real_model",
+    "arms": [
+      {
+        "arm": "baseline@seed=17",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 17,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "no_op@seed=17",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 17,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "comparator:concise@seed=17",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 1,
+        "target_total": 1,
+        "target_passed": 0,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 17,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 0,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "candidate@seed=17",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 17,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "baseline@seed=29",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 29,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "no_op@seed=29",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 29,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "comparator:concise@seed=29",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 29,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "candidate@seed=29",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 29,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      }
+    ],
+    "comparisons": [
+      {
+        "reference": "baseline",
+        "comparable": true,
+        "improved_targets": 0,
+        "regressed_targets": 0,
+        "improved_regressions": 0,
+        "regressed_regressions": 0,
+        "target_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.0,
+          "sample_stddev": 0.0,
+          "minimum_delta": 0.0,
+          "maximum_delta": 0.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "regression_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.0,
+          "sample_stddev": 0.0,
+          "minimum_delta": 0.0,
+          "maximum_delta": 0.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "groups": [
+          {
+            "group": "addition",
+            "improved": 0,
+            "regressed": 0,
+            "unchanged": 2,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.0,
+              "sample_stddev": 0.0,
+              "minimum_delta": 0.0,
+              "maximum_delta": 0.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          },
+          {
+            "group": "subtraction",
+            "improved": 0,
+            "regressed": 0,
+            "unchanged": 2,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.0,
+              "sample_stddev": 0.0,
+              "minimum_delta": 0.0,
+              "maximum_delta": 0.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          }
+        ]
+      },
+      {
+        "reference": "no_op",
+        "comparable": true,
+        "improved_targets": 0,
+        "regressed_targets": 0,
+        "improved_regressions": 0,
+        "regressed_regressions": 0,
+        "target_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.0,
+          "sample_stddev": 0.0,
+          "minimum_delta": 0.0,
+          "maximum_delta": 0.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "regression_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.0,
+          "sample_stddev": 0.0,
+          "minimum_delta": 0.0,
+          "maximum_delta": 0.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "groups": [
+          {
+            "group": "addition",
+            "improved": 0,
+            "regressed": 0,
+            "unchanged": 2,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.0,
+              "sample_stddev": 0.0,
+              "minimum_delta": 0.0,
+              "maximum_delta": 0.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          },
+          {
+            "group": "subtraction",
+            "improved": 0,
+            "regressed": 0,
+            "unchanged": 2,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.0,
+              "sample_stddev": 0.0,
+              "minimum_delta": 0.0,
+              "maximum_delta": 0.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          }
+        ]
+      },
+      {
+        "reference": "comparator:concise",
+        "comparable": true,
+        "improved_targets": 1,
+        "regressed_targets": 0,
+        "improved_regressions": 0,
+        "regressed_regressions": 0,
+        "target_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.5,
+          "sample_stddev": 0.7071067811865476,
+          "minimum_delta": 0.0,
+          "maximum_delta": 1.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "regression_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.0,
+          "sample_stddev": 0.0,
+          "minimum_delta": 0.0,
+          "maximum_delta": 0.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "groups": [
+          {
+            "group": "addition",
+            "improved": 1,
+            "regressed": 0,
+            "unchanged": 1,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.5,
+              "sample_stddev": 0.7071067811865476,
+              "minimum_delta": 0.0,
+              "maximum_delta": 1.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          },
+          {
+            "group": "subtraction",
+            "improved": 0,
+            "regressed": 0,
+            "unchanged": 2,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.0,
+              "sample_stddev": 0.0,
+              "minimum_delta": 0.0,
+              "maximum_delta": 0.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          }
+        ]
+      }
+    ],
+    "issues": []
+  },
+  "error_code": null
+}

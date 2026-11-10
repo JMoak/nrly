@@ -1,0 +1,6 @@
+{
+  "name": "unknown run is an explicit error",
+  "tool": "get_run",
+  "args": { "run_id": "00000000000000000000000000000000" },
+  "expectError": { "message": { "$regex": "run_not_found" } }
+}

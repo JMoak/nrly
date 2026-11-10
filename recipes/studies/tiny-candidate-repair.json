@@ -1,0 +1,4 @@
+{
+  "name": "Double the faulty output weights",
+  "program": {"kind": "weight_scale", "target": "output.weight", "factor": 2}
+}

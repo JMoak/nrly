@@ -1,0 +1,6 @@
+{
+  "name": "run listing rejects unbounded result requests",
+  "tool": "list_runs",
+  "args": { "limit": 21 },
+  "expectError": { "message": { "$regex": "limit|validation", "flags": "i" } }
+}

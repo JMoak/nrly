@@ -1,0 +1,6 @@
+{
+  "name": "run handles cannot address files outside the experiment store",
+  "tool": "get_run",
+  "args": { "run_id": "../outside" },
+  "expectError": { "message": { "$regex": "invalid_run_id" } }
+}

@@ -1,0 +1,36 @@
+{
+  "study_id": "4e3fd74351a2404eac4dbc0009dac1e9",
+  "attempt_id": "ef91e9ae1dc74338ad91511254c85a07",
+  "arm": "baseline@seed=29",
+  "samples": [
+    {
+      "case_id": "dev-add",
+      "status": "completed",
+      "provenance": "huggingface",
+      "output": "2 + 3 = 5",
+      "output_offset": 0,
+      "output_characters": 9,
+      "more_output": false,
+      "truncated": false,
+      "inference_truncated": false,
+      "finish_reason": "eos",
+      "error_code": null
+    },
+    {
+      "case_id": "dev-subtract",
+      "status": "completed",
+      "provenance": "huggingface",
+      "output": "5 - 2 = 3",
+      "output_offset": 0,
+      "output_characters": 9,
+      "more_output": false,
+      "truncated": false,
+      "inference_truncated": false,
+      "finish_reason": "eos",
+      "error_code": null
+    }
+  ],
+  "total": 2,
+  "offset": 0,
+  "next_offset": null
+}

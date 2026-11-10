@@ -1,0 +1,228 @@
+{
+  "scope": "engineering_fixture",
+  "baseline": "109d91c48cd748a885b4503297c3254e",
+  "candidate": "0f53dc18923248b9b63844ba0d0abce7",
+  "restoration_run": "1dc61f8a168f42a897986aed09bf1048",
+  "base_restored": true,
+  "comparison": {
+    "schema_version": "0.1",
+    "baseline_run": "109d91c48cd748a885b4503297c3254e",
+    "candidate_run": "0f53dc18923248b9b63844ba0d0abce7",
+    "comparable": true,
+    "issues": [],
+    "verdict": "observed_improvement",
+    "accuracy_delta": 0.8333333333333334,
+    "improved_cases": [
+      "sum-1",
+      "sum-2",
+      "sum-3",
+      "sum-4",
+      "sum-5"
+    ],
+    "regressed_cases": [],
+    "unchanged_cases": [
+      "sum-0"
+    ],
+    "baseline": {
+      "schema_version": "0.1",
+      "scorer_version": "nrly-scorers/1",
+      "run_id": "109d91c48cd748a885b4503297c3254e",
+      "scope": "engineering_fixture",
+      "complete": true,
+      "issues": [],
+      "summary": {
+        "total": 6,
+        "scored": 6,
+        "passed": 1,
+        "failed": 5,
+        "unscored": 0,
+        "accuracy": 0.16666666666666666
+      },
+      "targets": {
+        "total": 5,
+        "scored": 5,
+        "passed": 0,
+        "failed": 5,
+        "unscored": 0,
+        "accuracy": 0.0
+      },
+      "regressions": {
+        "total": 1,
+        "scored": 1,
+        "passed": 1,
+        "failed": 0,
+        "unscored": 0,
+        "accuracy": 1.0
+      },
+      "cases": [
+        {
+          "case_id": "sum-0",
+          "split": "test",
+          "role": "regression",
+          "outcome": "pass",
+          "output": "0",
+          "expected": "0",
+          "scorer": "numeric",
+          "score": 1.0,
+          "reason": "numeric match"
+        },
+        {
+          "case_id": "sum-1",
+          "split": "test",
+          "role": "target",
+          "outcome": "fail",
+          "output": "3",
+          "expected": "6",
+          "scorer": "numeric",
+          "score": 0.0,
+          "reason": "numeric mismatch"
+        },
+        {
+          "case_id": "sum-2",
+          "split": "test",
+          "role": "target",
+          "outcome": "fail",
+          "output": "2",
+          "expected": "4",
+          "scorer": "numeric",
+          "score": 0.0,
+          "reason": "numeric mismatch"
+        },
+        {
+          "case_id": "sum-3",
+          "split": "test",
+          "role": "target",
+          "outcome": "fail",
+          "output": "6",
+          "expected": "12",
+          "scorer": "numeric",
+          "score": 0.0,
+          "reason": "numeric mismatch"
+        },
+        {
+          "case_id": "sum-4",
+          "split": "test",
+          "role": "target",
+          "outcome": "fail",
+          "output": "6",
+          "expected": "12",
+          "scorer": "numeric",
+          "score": 0.0,
+          "reason": "numeric mismatch"
+        },
+        {
+          "case_id": "sum-5",
+          "split": "test",
+          "role": "target",
+          "outcome": "fail",
+          "output": "6",
+          "expected": "12",
+          "scorer": "numeric",
+          "score": 0.0,
+          "reason": "numeric mismatch"
+        }
+      ]
+    },
+    "candidate": {
+      "schema_version": "0.1",
+      "scorer_version": "nrly-scorers/1",
+      "run_id": "0f53dc18923248b9b63844ba0d0abce7",
+      "scope": "engineering_fixture",
+      "complete": true,
+      "issues": [],
+      "summary": {
+        "total": 6,
+        "scored": 6,
+        "passed": 6,
+        "failed": 0,
+        "unscored": 0,
+        "accuracy": 1.0
+      },
+      "targets": {
+        "total": 5,
+        "scored": 5,
+        "passed": 5,
+        "failed": 0,
+        "unscored": 0,
+        "accuracy": 1.0
+      },
+      "regressions": {
+        "total": 1,
+        "scored": 1,
+        "passed": 1,
+        "failed": 0,
+        "unscored": 0,
+        "accuracy": 1.0
+      },
+      "cases": [
+        {
+          "case_id": "sum-0",
+          "split": "test",
+          "role": "regression",
+          "outcome": "pass",
+          "output": "0",
+          "expected": "0",
+          "scorer": "numeric",
+          "score": 1.0,
+          "reason": "numeric match"
+        },
+        {
+          "case_id": "sum-1",
+          "split": "test",
+          "role": "target",
+          "outcome": "pass",
+          "output": "6",
+          "expected": "6",
+          "scorer": "numeric",
+          "score": 1.0,
+          "reason": "numeric match"
+        },
+        {
+          "case_id": "sum-2",
+          "split": "test",
+          "role": "target",
+          "outcome": "pass",
+          "output": "4",
+          "expected": "4",
+          "scorer": "numeric",
+          "score": 1.0,
+          "reason": "numeric match"
+        },
+        {
+          "case_id": "sum-3",
+          "split": "test",
+          "role": "target",
+          "outcome": "pass",
+          "output": "12",
+          "expected": "12",
+          "scorer": "numeric",
+          "score": 1.0,
+          "reason": "numeric match"
+        },
+        {
+          "case_id": "sum-4",
+          "split": "test",
+          "role": "target",
+          "outcome": "pass",
+          "output": "12",
+          "expected": "12",
+          "scorer": "numeric",
+          "score": 1.0,
+          "reason": "numeric match"
+        },
+        {
+          "case_id": "sum-5",
+          "split": "test",
+          "role": "target",
+          "outcome": "pass",
+          "output": "12",
+          "expected": "12",
+          "scorer": "numeric",
+          "score": 1.0,
+          "reason": "numeric match"
+        }
+      ]
+    }
+  },
+  "bundle": "C:\\src\\nrly\\docs\\validation\\wave2-fixture\\repair-bundle"
+}

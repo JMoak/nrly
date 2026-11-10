@@ -1,0 +1,29 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "top_k": {
+      "default": 5,
+      "maximum": 50,
+      "minimum": 0,
+      "title": "Top K",
+      "type": "integer"
+    },
+    "max_tokens": {
+      "default": 4096,
+      "maximum": 32768,
+      "minimum": 1,
+      "title": "Max Tokens",
+      "type": "integer"
+    },
+    "max_logits_elements": {
+      "default": 67108864,
+      "maximum": 268435456,
+      "minimum": 1,
+      "title": "Max Logits Elements",
+      "type": "integer"
+    }
+  },
+  "title": "DiagnosticSpec",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

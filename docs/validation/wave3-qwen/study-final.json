@@ -1,0 +1,536 @@
+{
+  "schema_version": "0.1",
+  "id": "4e3fd74351a2404eac4dbc0009dac1e9",
+  "status": "completed",
+  "spec": {
+    "schema_version": "0.2",
+    "name": "Qwen sampled public smoke; no research holdout claim",
+    "model": {
+      "backend": "huggingface",
+      "model_id": "Qwen/Qwen3-0.6B",
+      "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "device": "cuda",
+      "dtype": "bfloat16",
+      "local_files_only": true
+    },
+    "generation": {
+      "max_new_tokens": 64,
+      "temperature": 0.7,
+      "seed": 0,
+      "enable_thinking": false,
+      "top_p": 0.9,
+      "top_k": 20
+    },
+    "development_cases": [
+      {
+        "id": "dev-add",
+        "expected": "5",
+        "scorer": "final_number",
+        "tolerance": 1e-06,
+        "split": "discovery",
+        "role": "target",
+        "messages": [
+          {
+            "role": "user",
+            "content": "What is 2 + 3? Give only the final number."
+          }
+        ],
+        "group": "addition"
+      },
+      {
+        "id": "dev-subtract",
+        "input": "What is 5 - 2? Give only the final number.",
+        "expected": "3",
+        "scorer": "final_number",
+        "tolerance": 1e-06,
+        "split": "discovery",
+        "role": "regression",
+        "group": "subtraction"
+      }
+    ],
+    "controls": [],
+    "seeds": [
+      17,
+      29
+    ],
+    "comparators": [
+      {
+        "name": "concise",
+        "kind": "prompt",
+        "prefix": "Be concise. ",
+        "suffix": "",
+        "model": null
+      }
+    ],
+    "mutable_targets": [
+      "model.layers.0.mlp.down_proj.weight"
+    ],
+    "run_budget": {
+      "wall_seconds": 180.0,
+      "max_cases": 2,
+      "max_output_tokens": 128,
+      "max_capture_bytes": 65536
+    },
+    "budget": {
+      "max_attempts": 1,
+      "max_runs": 16,
+      "max_case_executions": 32,
+      "max_output_tokens": 2048,
+      "max_capture_bytes": 1048576,
+      "max_wall_seconds": 2880.0
+    }
+  },
+  "spec_digest": "61eff59935ca620e9aa363dd8923f8a3e7beb3f38f21b6ab3b48724a8fe2c92d",
+  "holdout": {
+    "digest": "8da8845b39f7362d430fed52d6c32021143efe2de6425612830056bb5ad01310",
+    "count": 2,
+    "targets": 1,
+    "regressions": 1
+  },
+  "created_at": "2026-11-10T14:47:58.554008+00:00",
+  "usage": {
+    "attempts": 1,
+    "runs": 16,
+    "case_executions": 32,
+    "output_tokens": 2048,
+    "capture_bytes": 1048576,
+    "wall_seconds": 2880.0,
+    "final_runs_reserved": 8
+  },
+  "model_identity": {
+    "backend": "huggingface",
+    "model_id": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "fingerprint": "f73bb3b459f878de0daa06254495c90dca296e5154d9b219eb6f1883a3af9b93",
+    "details": {
+      "attention_implementation": "eager",
+      "capture_semantics": "latest forward invocation; first max_elements in flattened output; post-intervention",
+      "chat_template_sha256": "41d5929bf73796beb66809ac700b2cf3ff81694f933e5c14d52b7fd6963c947d",
+      "config_sha256": "3f1c1a7f07c5b1221abfcb1c08523a178cfdf48cb4d229c495023df371441bc6",
+      "cuda_runtime": "13.2",
+      "cudnn_version": 92600,
+      "device": "cuda:0",
+      "device_name": "NVIDIA GeForce RTX 5090",
+      "dtype": "torch.bfloat16",
+      "execution": "native PyTorch forward hooks; no model reimplementation",
+      "generation_config_sha256": "b88074834ae9c321454aef80ceb56b33ef8ddba453cec8df55ae7c275de2b5f9",
+      "matmul_precision": "highest",
+      "python": "3.13.7",
+      "tokenizer_backend_sha256": "41e00eccf531cffc2e562d38bdd879d41e5044ea279af5b73c6a32aabcc8fe04",
+      "tokenizer_vocab_sha256": "3ec3c124e02b7ace235364350c04b8fc38d34b182aad914fc45430fa925c0f3f",
+      "torch": "2.15.0+cu132",
+      "transformers": "5.22.2",
+      "weights_sha256": "c21f9db51aa222b09c9590c3c891e9b50eecb0b5b99368ae7f989bde6a5115d6"
+    }
+  },
+  "nominee_attempt_id": "ef91e9ae1dc74338ad91511254c85a07",
+  "nominee_digest": "ba89ec11a72eb19f9dfa775dc341af9ac239785154129c82a8a89cee5b8438f4",
+  "finished_at": "2026-11-10T14:51:03.597116+00:00",
+  "final_result": {
+    "verdict": "inconclusive",
+    "recommendation": "retain_original",
+    "scope": "real_model",
+    "arms": [
+      {
+        "arm": "baseline@seed=17",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 17,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "no_op@seed=17",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 17,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "comparator:concise@seed=17",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 17,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "candidate@seed=17",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 17,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "baseline@seed=29",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 1,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 0,
+        "seed": 29,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 0,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "no_op@seed=29",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 1,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 0,
+        "seed": 29,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 0,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "comparator:concise@seed=29",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 29,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      },
+      {
+        "arm": "candidate@seed=29",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 2,
+        "target_total": 1,
+        "target_passed": 1,
+        "regression_total": 1,
+        "regression_passed": 1,
+        "seed": 29,
+        "groups": [
+          {
+            "group": "addition",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          },
+          {
+            "group": "subtraction",
+            "total": 1,
+            "passed": 1,
+            "unscored": 0
+          }
+        ]
+      }
+    ],
+    "comparisons": [
+      {
+        "reference": "baseline",
+        "comparable": true,
+        "improved_targets": 0,
+        "regressed_targets": 0,
+        "improved_regressions": 1,
+        "regressed_regressions": 0,
+        "target_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.0,
+          "sample_stddev": 0.0,
+          "minimum_delta": 0.0,
+          "maximum_delta": 0.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "regression_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.5,
+          "sample_stddev": 0.7071067811865476,
+          "minimum_delta": 0.0,
+          "maximum_delta": 1.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "groups": [
+          {
+            "group": "addition",
+            "improved": 0,
+            "regressed": 0,
+            "unchanged": 2,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.0,
+              "sample_stddev": 0.0,
+              "minimum_delta": 0.0,
+              "maximum_delta": 0.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          },
+          {
+            "group": "subtraction",
+            "improved": 1,
+            "regressed": 0,
+            "unchanged": 1,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.5,
+              "sample_stddev": 0.7071067811865476,
+              "minimum_delta": 0.0,
+              "maximum_delta": 1.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          }
+        ]
+      },
+      {
+        "reference": "no_op",
+        "comparable": true,
+        "improved_targets": 0,
+        "regressed_targets": 0,
+        "improved_regressions": 1,
+        "regressed_regressions": 0,
+        "target_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.0,
+          "sample_stddev": 0.0,
+          "minimum_delta": 0.0,
+          "maximum_delta": 0.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "regression_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.5,
+          "sample_stddev": 0.7071067811865476,
+          "minimum_delta": 0.0,
+          "maximum_delta": 1.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "groups": [
+          {
+            "group": "addition",
+            "improved": 0,
+            "regressed": 0,
+            "unchanged": 2,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.0,
+              "sample_stddev": 0.0,
+              "minimum_delta": 0.0,
+              "maximum_delta": 0.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          },
+          {
+            "group": "subtraction",
+            "improved": 1,
+            "regressed": 0,
+            "unchanged": 1,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.5,
+              "sample_stddev": 0.7071067811865476,
+              "minimum_delta": 0.0,
+              "maximum_delta": 1.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          }
+        ]
+      },
+      {
+        "reference": "comparator:concise",
+        "comparable": true,
+        "improved_targets": 0,
+        "regressed_targets": 0,
+        "improved_regressions": 0,
+        "regressed_regressions": 0,
+        "target_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.0,
+          "sample_stddev": 0.0,
+          "minimum_delta": 0.0,
+          "maximum_delta": 0.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "regression_variation": {
+          "seed_count": 2,
+          "cases_per_seed": 1,
+          "paired_executions": 2,
+          "mean_delta": 0.0,
+          "sample_stddev": 0.0,
+          "minimum_delta": 0.0,
+          "maximum_delta": 0.0,
+          "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+        },
+        "groups": [
+          {
+            "group": "addition",
+            "improved": 0,
+            "regressed": 0,
+            "unchanged": 2,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.0,
+              "sample_stddev": 0.0,
+              "minimum_delta": 0.0,
+              "maximum_delta": 0.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          },
+          {
+            "group": "subtraction",
+            "improved": 0,
+            "regressed": 0,
+            "unchanged": 2,
+            "variation": {
+              "seed_count": 2,
+              "cases_per_seed": 1,
+              "paired_executions": 2,
+              "mean_delta": 0.0,
+              "sample_stddev": 0.0,
+              "minimum_delta": 0.0,
+              "maximum_delta": 0.0,
+              "interpretation": "descriptive_across_registered_seeds_not_population_ci"
+            }
+          }
+        ]
+      }
+    ],
+    "issues": [
+      "candidate did not improve targets beyond every registered control"
+    ]
+  },
+  "final_error_code": "study_inconclusive"
+}

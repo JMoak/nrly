@@ -1,0 +1,277 @@
+{
+  "$defs": {
+    "TensorSlice": {
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "default": 0,
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "stop": {
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "title": "Stop",
+          "type": "integer"
+        },
+        "step": {
+          "default": 1,
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "stop"
+      ],
+      "title": "TensorSlice",
+      "type": "object"
+    },
+    "WeightOperationSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target"
+        },
+        "factor": {
+          "default": 1.0,
+          "title": "Factor",
+          "type": "number"
+        },
+        "values": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Values",
+          "type": "array"
+        },
+        "shape": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 8,
+          "title": "Shape",
+          "type": "array"
+        },
+        "indices": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 65536,
+          "title": "Indices",
+          "type": "array"
+        },
+        "position": {
+          "default": "all",
+          "enum": [
+            "all",
+            "last"
+          ],
+          "title": "Position",
+          "type": "string"
+        },
+        "rank": {
+          "anyOf": [
+            {
+              "maximum": 256,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rank"
+        },
+        "left": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Left",
+          "type": "array"
+        },
+        "right": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Right",
+          "type": "array"
+        },
+        "slices": {
+          "items": {
+            "$ref": "#/$defs/TensorSlice"
+          },
+          "maxItems": 8,
+          "title": "Slices",
+          "type": "array"
+        },
+        "kind": {
+          "enum": [
+            "weight_scale",
+            "weight_replace",
+            "weight_patch",
+            "weight_add",
+            "weight_sparse_add",
+            "weight_low_rank",
+            "weight_slice_scale"
+          ],
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "WeightOperationSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "target": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Target"
+    },
+    "factor": {
+      "default": 1.0,
+      "title": "Factor",
+      "type": "number"
+    },
+    "values": {
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 65536,
+      "title": "Values",
+      "type": "array"
+    },
+    "shape": {
+      "items": {
+        "type": "integer"
+      },
+      "maxItems": 8,
+      "title": "Shape",
+      "type": "array"
+    },
+    "indices": {
+      "items": {
+        "type": "integer"
+      },
+      "maxItems": 65536,
+      "title": "Indices",
+      "type": "array"
+    },
+    "position": {
+      "default": "all",
+      "enum": [
+        "all",
+        "last"
+      ],
+      "title": "Position",
+      "type": "string"
+    },
+    "rank": {
+      "anyOf": [
+        {
+          "maximum": 256,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rank"
+    },
+    "left": {
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 65536,
+      "title": "Left",
+      "type": "array"
+    },
+    "right": {
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 65536,
+      "title": "Right",
+      "type": "array"
+    },
+    "slices": {
+      "items": {
+        "$ref": "#/$defs/TensorSlice"
+      },
+      "maxItems": 8,
+      "title": "Slices",
+      "type": "array"
+    },
+    "kind": {
+      "default": "identity",
+      "enum": [
+        "identity",
+        "activation_scale",
+        "activation_add",
+        "weight_scale",
+        "weight_replace",
+        "weight_patch",
+        "weight_add",
+        "weight_sparse_add",
+        "weight_low_rank",
+        "weight_slice_scale",
+        "pipeline"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "expected_base": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expected Base"
+    },
+    "operations": {
+      "items": {
+        "$ref": "#/$defs/WeightOperationSpec"
+      },
+      "maxItems": 32,
+      "title": "Operations",
+      "type": "array"
+    }
+  },
+  "title": "ProgramSpec",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -1,0 +1,1820 @@
+{
+  "$defs": {
+    "BudgetSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "wall_seconds": {
+          "default": 120,
+          "exclusiveMinimum": 0,
+          "maximum": 86400,
+          "title": "Wall Seconds",
+          "type": "number"
+        },
+        "max_cases": {
+          "default": 100,
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Max Cases",
+          "type": "integer"
+        },
+        "max_output_tokens": {
+          "default": 4096,
+          "maximum": 1000000,
+          "minimum": 1,
+          "title": "Max Output Tokens",
+          "type": "integer"
+        },
+        "max_capture_bytes": {
+          "default": 262144,
+          "maximum": 100000000,
+          "minimum": 0,
+          "title": "Max Capture Bytes",
+          "type": "integer"
+        }
+      },
+      "title": "BudgetSpec",
+      "type": "object"
+    },
+    "CaptureSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        },
+        "max_elements": {
+          "default": 16,
+          "maximum": 4096,
+          "minimum": 1,
+          "title": "Max Elements",
+          "type": "integer"
+        },
+        "token_positions": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 128,
+          "title": "Token Positions",
+          "type": "array"
+        },
+        "invocation": {
+          "default": "latest",
+          "enum": [
+            "first",
+            "latest"
+          ],
+          "title": "Invocation",
+          "type": "string"
+        },
+        "source": {
+          "default": "output",
+          "enum": [
+            "input",
+            "output"
+          ],
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "title": "CaptureSpec",
+      "type": "object"
+    },
+    "CaseSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "input": {
+          "anyOf": [
+            {
+              "maxLength": 100000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected"
+        },
+        "scorer": {
+          "default": "exact",
+          "enum": [
+            "exact",
+            "numeric",
+            "final_number"
+          ],
+          "title": "Scorer",
+          "type": "string"
+        },
+        "tolerance": {
+          "default": 1e-06,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Tolerance",
+          "type": "number"
+        },
+        "split": {
+          "default": "discovery",
+          "enum": [
+            "discovery",
+            "validation",
+            "test"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "role": {
+          "default": "target",
+          "enum": [
+            "target",
+            "regression"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "messages": {
+          "items": {
+            "$ref": "#/$defs/ChatMessage"
+          },
+          "maxItems": 128,
+          "title": "Messages",
+          "type": "array"
+        },
+        "continuation": {
+          "anyOf": [
+            {
+              "maxLength": 100000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Continuation"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group"
+        },
+        "adapter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaskAdapterSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "CaseSpec",
+      "type": "object"
+    },
+    "ChatMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "system",
+            "user",
+            "assistant"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "content": {
+          "maxLength": 100000,
+          "minLength": 1,
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "ChatMessage",
+      "type": "object"
+    },
+    "ContinuationScore": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "const": "teacher_forced",
+          "default": "teacher_forced",
+          "title": "Mode",
+          "type": "string"
+        },
+        "tokenization": {
+          "const": "separate_prompt_and_continuation",
+          "default": "separate_prompt_and_continuation",
+          "title": "Tokenization",
+          "type": "string"
+        },
+        "prompt_tokens": {
+          "minimum": 1,
+          "title": "Prompt Tokens",
+          "type": "integer"
+        },
+        "continuation_tokens": {
+          "maximum": 32768,
+          "minimum": 1,
+          "title": "Continuation Tokens",
+          "type": "integer"
+        },
+        "sum_logprob": {
+          "maximum": 0,
+          "title": "Sum Logprob",
+          "type": "number"
+        },
+        "mean_logprob": {
+          "maximum": 0,
+          "title": "Mean Logprob",
+          "type": "number"
+        },
+        "tokens": {
+          "items": {
+            "$ref": "#/$defs/TokenObservation"
+          },
+          "maxItems": 32768,
+          "minItems": 1,
+          "title": "Tokens",
+          "type": "array"
+        }
+      },
+      "required": [
+        "prompt_tokens",
+        "continuation_tokens",
+        "sum_logprob",
+        "mean_logprob",
+        "tokens"
+      ],
+      "title": "ContinuationScore",
+      "type": "object"
+    },
+    "DiagnosticSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "top_k": {
+          "default": 5,
+          "maximum": 50,
+          "minimum": 0,
+          "title": "Top K",
+          "type": "integer"
+        },
+        "max_tokens": {
+          "default": 4096,
+          "maximum": 32768,
+          "minimum": 1,
+          "title": "Max Tokens",
+          "type": "integer"
+        },
+        "max_logits_elements": {
+          "default": 67108864,
+          "maximum": 268435456,
+          "minimum": 1,
+          "title": "Max Logits Elements",
+          "type": "integer"
+        }
+      },
+      "title": "DiagnosticSpec",
+      "type": "object"
+    },
+    "ErrorInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "ErrorInfo",
+      "type": "object"
+    },
+    "ExperimentSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "0.2",
+          "enum": [
+            "0.1",
+            "0.2",
+            "0.3"
+          ],
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "purpose": {
+          "default": "experiment",
+          "enum": [
+            "experiment",
+            "inspection"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        },
+        "model": {
+          "$ref": "#/$defs/ModelSpec"
+        },
+        "program": {
+          "$ref": "#/$defs/ProgramSpec"
+        },
+        "generation": {
+          "$ref": "#/$defs/GenerationSpec"
+        },
+        "cases": {
+          "items": {
+            "$ref": "#/$defs/CaseSpec"
+          },
+          "maxItems": 10000,
+          "title": "Cases",
+          "type": "array"
+        },
+        "captures": {
+          "items": {
+            "$ref": "#/$defs/CaptureSpec"
+          },
+          "maxItems": 8,
+          "title": "Captures",
+          "type": "array"
+        },
+        "weight_reads": {
+          "items": {
+            "$ref": "#/$defs/WeightReadSpec"
+          },
+          "maxItems": 8,
+          "title": "Weight Reads",
+          "type": "array"
+        },
+        "budget": {
+          "$ref": "#/$defs/BudgetSpec"
+        },
+        "diagnostics": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DiagnosticSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "ExperimentSpec",
+      "type": "object"
+    },
+    "GenerationSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "max_new_tokens": {
+          "default": 32,
+          "maximum": 32768,
+          "minimum": 1,
+          "title": "Max New Tokens",
+          "type": "integer"
+        },
+        "temperature": {
+          "default": 0.0,
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "seed": {
+          "default": 0,
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "enable_thinking": {
+          "default": false,
+          "title": "Enable Thinking",
+          "type": "boolean"
+        },
+        "top_p": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 1,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top P"
+        },
+        "top_k": {
+          "anyOf": [
+            {
+              "maximum": 1000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top K"
+        },
+        "min_new_tokens": {
+          "anyOf": [
+            {
+              "maximum": 32768,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min New Tokens"
+        },
+        "repetition_penalty": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 10,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Repetition Penalty"
+        }
+      },
+      "title": "GenerationSpec",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "ModelIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "title": "Backend",
+          "type": "string"
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "revision": {
+          "title": "Revision",
+          "type": "string"
+        },
+        "fingerprint": {
+          "title": "Fingerprint",
+          "type": "string"
+        },
+        "details": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Details",
+          "type": "object"
+        }
+      },
+      "required": [
+        "backend",
+        "model_id",
+        "revision",
+        "fingerprint"
+      ],
+      "title": "ModelIdentity",
+      "type": "object"
+    },
+    "ModelInspection": {
+      "additionalProperties": false,
+      "properties": {
+        "tensors": {
+          "items": {
+            "$ref": "#/$defs/TensorInfo"
+          },
+          "title": "Tensors",
+          "type": "array"
+        },
+        "weights": {
+          "items": {
+            "$ref": "#/$defs/TensorCapture"
+          },
+          "title": "Weights",
+          "type": "array"
+        }
+      },
+      "title": "ModelInspection",
+      "type": "object"
+    },
+    "ModelSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "default": "tiny",
+          "enum": [
+            "tiny",
+            "huggingface"
+          ],
+          "title": "Backend",
+          "type": "string"
+        },
+        "model_id": {
+          "default": "nrly/tiny-sum-v1",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "revision": {
+          "default": "1",
+          "title": "Revision",
+          "type": "string"
+        },
+        "device": {
+          "default": "cpu",
+          "enum": [
+            "cpu",
+            "cuda",
+            "auto"
+          ],
+          "title": "Device",
+          "type": "string"
+        },
+        "dtype": {
+          "default": "float32",
+          "enum": [
+            "float32",
+            "float16",
+            "bfloat16"
+          ],
+          "title": "Dtype",
+          "type": "string"
+        },
+        "local_files_only": {
+          "default": true,
+          "title": "Local Files Only",
+          "type": "boolean"
+        }
+      },
+      "title": "ModelSpec",
+      "type": "object"
+    },
+    "ProgramSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target"
+        },
+        "factor": {
+          "default": 1.0,
+          "title": "Factor",
+          "type": "number"
+        },
+        "values": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Values",
+          "type": "array"
+        },
+        "shape": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 8,
+          "title": "Shape",
+          "type": "array"
+        },
+        "indices": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 65536,
+          "title": "Indices",
+          "type": "array"
+        },
+        "position": {
+          "default": "all",
+          "enum": [
+            "all",
+            "last"
+          ],
+          "title": "Position",
+          "type": "string"
+        },
+        "rank": {
+          "anyOf": [
+            {
+              "maximum": 256,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rank"
+        },
+        "left": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Left",
+          "type": "array"
+        },
+        "right": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Right",
+          "type": "array"
+        },
+        "slices": {
+          "items": {
+            "$ref": "#/$defs/TensorSlice"
+          },
+          "maxItems": 8,
+          "title": "Slices",
+          "type": "array"
+        },
+        "kind": {
+          "default": "identity",
+          "enum": [
+            "identity",
+            "activation_scale",
+            "activation_add",
+            "weight_scale",
+            "weight_replace",
+            "weight_patch",
+            "weight_add",
+            "weight_sparse_add",
+            "weight_low_rank",
+            "weight_slice_scale",
+            "pipeline"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "expected_base": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Base"
+        },
+        "operations": {
+          "items": {
+            "$ref": "#/$defs/WeightOperationSpec"
+          },
+          "maxItems": 32,
+          "title": "Operations",
+          "type": "array"
+        }
+      },
+      "title": "ProgramSpec",
+      "type": "object"
+    },
+    "SampleResult": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "provenance": {
+          "enum": [
+            "torch_fixture",
+            "huggingface",
+            "unavailable"
+          ],
+          "title": "Provenance",
+          "type": "string"
+        },
+        "output": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output"
+        },
+        "elapsed_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Elapsed Ms",
+          "type": "number"
+        },
+        "input_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input Tokens"
+        },
+        "output_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output Tokens"
+        },
+        "finish_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finish Reason"
+        },
+        "captures": {
+          "items": {
+            "$ref": "#/$defs/TensorCapture"
+          },
+          "title": "Captures",
+          "type": "array"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ErrorInfo"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "weight_changes": {
+          "items": {
+            "$ref": "#/$defs/WeightChange"
+          },
+          "title": "Weight Changes",
+          "type": "array"
+        },
+        "diagnostics": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContinuationScore"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "truncated": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Truncated"
+        }
+      },
+      "required": [
+        "case_id",
+        "status",
+        "provenance"
+      ],
+      "title": "SampleResult",
+      "type": "object"
+    },
+    "TaskAdapterSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "nrly-tasks/1",
+          "default": "nrly-tasks/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "multiple_choice",
+            "json",
+            "instruction_constraints"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "choices": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 26,
+          "title": "Choices",
+          "type": "array"
+        },
+        "required": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Required",
+          "type": "array"
+        },
+        "forbidden": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Forbidden",
+          "type": "array"
+        },
+        "max_chars": {
+          "anyOf": [
+            {
+              "maximum": 1000000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Chars"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "TaskAdapterSpec",
+      "type": "object"
+    },
+    "TensorCapture": {
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "title": "Target",
+          "type": "string"
+        },
+        "shape": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Shape",
+          "type": "array"
+        },
+        "dtype": {
+          "title": "Dtype",
+          "type": "string"
+        },
+        "values": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Values",
+          "type": "array"
+        },
+        "truncated": {
+          "title": "Truncated",
+          "type": "boolean"
+        },
+        "flat_indices": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 4096,
+          "title": "Flat Indices",
+          "type": "array"
+        },
+        "coordinates": {
+          "items": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "maxItems": 4096,
+          "title": "Coordinates",
+          "type": "array"
+        },
+        "selection_shape": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 8,
+          "title": "Selection Shape",
+          "type": "array"
+        },
+        "statistics": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TensorStatistics"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "tensor_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tensor Sha256"
+        },
+        "token_positions": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 128,
+          "title": "Token Positions",
+          "type": "array"
+        },
+        "invocation_index": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Invocation Index"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "enum": [
+                "input",
+                "output"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        }
+      },
+      "required": [
+        "target",
+        "shape",
+        "dtype",
+        "values",
+        "truncated"
+      ],
+      "title": "TensorCapture",
+      "type": "object"
+    },
+    "TensorInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "parameter",
+            "module"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "shape": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Shape",
+          "type": "array"
+        },
+        "dtype": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dtype"
+        }
+      },
+      "required": [
+        "name",
+        "kind"
+      ],
+      "title": "TensorInfo",
+      "type": "object"
+    },
+    "TensorSlice": {
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "default": 0,
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "stop": {
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "title": "Stop",
+          "type": "integer"
+        },
+        "step": {
+          "default": 1,
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "stop"
+      ],
+      "title": "TensorSlice",
+      "type": "object"
+    },
+    "TensorStatistics": {
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "const": "selection",
+          "default": "selection",
+          "title": "Scope",
+          "type": "string"
+        },
+        "count": {
+          "minimum": 0,
+          "title": "Count",
+          "type": "integer"
+        },
+        "minimum": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum"
+        },
+        "maximum": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum"
+        },
+        "mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mean"
+        },
+        "std": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Std"
+        },
+        "rms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rms"
+        },
+        "zero_count": {
+          "minimum": 0,
+          "title": "Zero Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "count",
+        "zero_count"
+      ],
+      "title": "TensorStatistics",
+      "type": "object"
+    },
+    "TokenAlternative": {
+      "additionalProperties": false,
+      "properties": {
+        "token_id": {
+          "minimum": 0,
+          "title": "Token Id",
+          "type": "integer"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "logprob": {
+          "maximum": 0,
+          "title": "Logprob",
+          "type": "number"
+        }
+      },
+      "required": [
+        "token_id",
+        "text",
+        "logprob"
+      ],
+      "title": "TokenAlternative",
+      "type": "object"
+    },
+    "TokenObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "token_id": {
+          "minimum": 0,
+          "title": "Token Id",
+          "type": "integer"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "logprob": {
+          "maximum": 0,
+          "title": "Logprob",
+          "type": "number"
+        },
+        "position": {
+          "minimum": 1,
+          "title": "Position",
+          "type": "integer"
+        },
+        "rank": {
+          "minimum": 1,
+          "title": "Rank",
+          "type": "integer"
+        },
+        "top_k": {
+          "items": {
+            "$ref": "#/$defs/TokenAlternative"
+          },
+          "maxItems": 50,
+          "title": "Top K",
+          "type": "array"
+        }
+      },
+      "required": [
+        "token_id",
+        "text",
+        "logprob",
+        "position",
+        "rank"
+      ],
+      "title": "TokenObservation",
+      "type": "object"
+    },
+    "WeightChange": {
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "title": "Target",
+          "type": "string"
+        },
+        "shape": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Shape",
+          "type": "array"
+        },
+        "dtype": {
+          "title": "Dtype",
+          "type": "string"
+        },
+        "before_sha256": {
+          "title": "Before Sha256",
+          "type": "string"
+        },
+        "after_sha256": {
+          "title": "After Sha256",
+          "type": "string"
+        },
+        "changed_elements": {
+          "minimum": 0,
+          "title": "Changed Elements",
+          "type": "integer"
+        },
+        "total_elements": {
+          "minimum": 0,
+          "title": "Total Elements",
+          "type": "integer"
+        },
+        "before_preview": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 32,
+          "title": "Before Preview",
+          "type": "array"
+        },
+        "after_preview": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 32,
+          "title": "After Preview",
+          "type": "array"
+        },
+        "edited_indices": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 32,
+          "title": "Edited Indices",
+          "type": "array"
+        },
+        "edited_before": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 32,
+          "title": "Edited Before",
+          "type": "array"
+        },
+        "edited_after": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 32,
+          "title": "Edited After",
+          "type": "array"
+        },
+        "operation_index": {
+          "anyOf": [
+            {
+              "maximum": 31,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operation Index"
+        },
+        "operation_kind": {
+          "anyOf": [
+            {
+              "enum": [
+                "weight_scale",
+                "weight_replace",
+                "weight_patch",
+                "weight_add",
+                "weight_sparse_add",
+                "weight_low_rank",
+                "weight_slice_scale"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operation Kind"
+        },
+        "edited_coordinates": {
+          "items": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "maxItems": 32,
+          "title": "Edited Coordinates",
+          "type": "array"
+        },
+        "net_changed_elements": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Net Changed Elements"
+        },
+        "net_before_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Net Before Sha256"
+        },
+        "net_after_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Net After Sha256"
+        }
+      },
+      "required": [
+        "target",
+        "shape",
+        "dtype",
+        "before_sha256",
+        "after_sha256",
+        "changed_elements",
+        "total_elements"
+      ],
+      "title": "WeightChange",
+      "type": "object"
+    },
+    "WeightOperationSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target"
+        },
+        "factor": {
+          "default": 1.0,
+          "title": "Factor",
+          "type": "number"
+        },
+        "values": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Values",
+          "type": "array"
+        },
+        "shape": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 8,
+          "title": "Shape",
+          "type": "array"
+        },
+        "indices": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 65536,
+          "title": "Indices",
+          "type": "array"
+        },
+        "position": {
+          "default": "all",
+          "enum": [
+            "all",
+            "last"
+          ],
+          "title": "Position",
+          "type": "string"
+        },
+        "rank": {
+          "anyOf": [
+            {
+              "maximum": 256,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rank"
+        },
+        "left": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Left",
+          "type": "array"
+        },
+        "right": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Right",
+          "type": "array"
+        },
+        "slices": {
+          "items": {
+            "$ref": "#/$defs/TensorSlice"
+          },
+          "maxItems": 8,
+          "title": "Slices",
+          "type": "array"
+        },
+        "kind": {
+          "enum": [
+            "weight_scale",
+            "weight_replace",
+            "weight_patch",
+            "weight_add",
+            "weight_sparse_add",
+            "weight_low_rank",
+            "weight_slice_scale"
+          ],
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "WeightOperationSpec",
+      "type": "object"
+    },
+    "WeightReadSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        },
+        "max_elements": {
+          "default": 16,
+          "maximum": 4096,
+          "minimum": 1,
+          "title": "Max Elements",
+          "type": "integer"
+        },
+        "token_positions": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 128,
+          "title": "Token Positions",
+          "type": "array"
+        },
+        "invocation": {
+          "default": "latest",
+          "enum": [
+            "first",
+            "latest"
+          ],
+          "title": "Invocation",
+          "type": "string"
+        },
+        "source": {
+          "default": "output",
+          "enum": [
+            "input",
+            "output"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "indices": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 4096,
+          "title": "Indices",
+          "type": "array"
+        },
+        "coordinates": {
+          "items": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "maxItems": 4096,
+          "title": "Coordinates",
+          "type": "array"
+        },
+        "slices": {
+          "items": {
+            "$ref": "#/$defs/TensorSlice"
+          },
+          "maxItems": 8,
+          "title": "Slices",
+          "type": "array"
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "title": "WeightReadSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "default": "0.2",
+      "enum": [
+        "0.1",
+        "0.2",
+        "0.3"
+      ],
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "queued",
+        "running",
+        "cancelling",
+        "succeeded",
+        "failed",
+        "cancelled",
+        "interrupted"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "spec": {
+      "$ref": "#/$defs/ExperimentSpec"
+    },
+    "spec_digest": {
+      "title": "Spec Digest",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Started At"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Finished At"
+    },
+    "model_identity": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ModelIdentity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "inspection": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ModelInspection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "samples": {
+      "items": {
+        "$ref": "#/$defs/SampleResult"
+      },
+      "title": "Samples",
+      "type": "array"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ErrorInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "elapsed_ms": {
+      "default": 0,
+      "title": "Elapsed Ms",
+      "type": "number"
+    },
+    "capture_bytes": {
+      "default": 0,
+      "title": "Capture Bytes",
+      "type": "integer"
+    },
+    "output_tokens": {
+      "default": 0,
+      "title": "Output Tokens",
+      "type": "integer"
+    },
+    "parent_run": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Run"
+    }
+  },
+  "required": [
+    "id",
+    "status",
+    "spec",
+    "spec_digest",
+    "created_at"
+  ],
+  "title": "RunRecord",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

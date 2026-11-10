@@ -1,0 +1,103 @@
+{
+  "$defs": {
+    "ModelSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "default": "tiny",
+          "enum": [
+            "tiny",
+            "huggingface"
+          ],
+          "title": "Backend",
+          "type": "string"
+        },
+        "model_id": {
+          "default": "nrly/tiny-sum-v1",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "revision": {
+          "default": "1",
+          "title": "Revision",
+          "type": "string"
+        },
+        "device": {
+          "default": "cpu",
+          "enum": [
+            "cpu",
+            "cuda",
+            "auto"
+          ],
+          "title": "Device",
+          "type": "string"
+        },
+        "dtype": {
+          "default": "float32",
+          "enum": [
+            "float32",
+            "float16",
+            "bfloat16"
+          ],
+          "title": "Dtype",
+          "type": "string"
+        },
+        "local_files_only": {
+          "default": true,
+          "title": "Local Files Only",
+          "type": "boolean"
+        }
+      },
+      "title": "ModelSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Operator-registered alternative; an external checkpoint may be fine-tuned elsewhere.",
+  "properties": {
+    "name": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "prompt",
+        "model"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "prefix": {
+      "default": "",
+      "maxLength": 10000,
+      "title": "Prefix",
+      "type": "string"
+    },
+    "suffix": {
+      "default": "",
+      "maxLength": 10000,
+      "title": "Suffix",
+      "type": "string"
+    },
+    "model": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ModelSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "name",
+    "kind"
+  ],
+  "title": "ComparatorSpec",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

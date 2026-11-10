@@ -1,0 +1,150 @@
+{
+  "schema_version": "0.1",
+  "baseline_run": "e2debe3545ff4255b99aa954b060938e",
+  "candidate_run": "ddb3cdd99fa248a298ce8fb93931191c",
+  "comparable": true,
+  "issues": [],
+  "verdict": "no_change",
+  "accuracy_delta": 0.0,
+  "improved_cases": [],
+  "regressed_cases": [],
+  "unchanged_cases": [
+    "arithmetic",
+    "format",
+    "regression"
+  ],
+  "baseline": {
+    "schema_version": "0.1",
+    "scorer_version": "nrly-scorers/1",
+    "run_id": "e2debe3545ff4255b99aa954b060938e",
+    "scope": "real_model",
+    "complete": true,
+    "issues": [],
+    "summary": {
+      "total": 3,
+      "scored": 3,
+      "passed": 1,
+      "failed": 2,
+      "unscored": 0,
+      "accuracy": 0.3333333333333333
+    },
+    "targets": {
+      "total": 2,
+      "scored": 2,
+      "passed": 0,
+      "failed": 2,
+      "unscored": 0,
+      "accuracy": 0.0
+    },
+    "regressions": {
+      "total": 1,
+      "scored": 1,
+      "passed": 1,
+      "failed": 0,
+      "unscored": 0,
+      "accuracy": 1.0
+    },
+    "cases": [
+      {
+        "case_id": "arithmetic",
+        "split": "validation",
+        "role": "target",
+        "outcome": "fail",
+        "output": "2 + 3 = 5",
+        "expected": "5",
+        "scorer": "exact",
+        "score": 0.0,
+        "reason": "exact mismatch"
+      },
+      {
+        "case_id": "format",
+        "split": "validation",
+        "role": "target",
+        "outcome": "fail",
+        "output": "OK.",
+        "expected": "OK",
+        "scorer": "exact",
+        "score": 0.0,
+        "reason": "exact mismatch"
+      },
+      {
+        "case_id": "regression",
+        "split": "validation",
+        "role": "regression",
+        "outcome": "pass",
+        "output": "Paris",
+        "expected": "Paris",
+        "scorer": "exact",
+        "score": 1.0,
+        "reason": "exact match"
+      }
+    ]
+  },
+  "candidate": {
+    "schema_version": "0.1",
+    "scorer_version": "nrly-scorers/1",
+    "run_id": "ddb3cdd99fa248a298ce8fb93931191c",
+    "scope": "real_model",
+    "complete": true,
+    "issues": [],
+    "summary": {
+      "total": 3,
+      "scored": 3,
+      "passed": 1,
+      "failed": 2,
+      "unscored": 0,
+      "accuracy": 0.3333333333333333
+    },
+    "targets": {
+      "total": 2,
+      "scored": 2,
+      "passed": 0,
+      "failed": 2,
+      "unscored": 0,
+      "accuracy": 0.0
+    },
+    "regressions": {
+      "total": 1,
+      "scored": 1,
+      "passed": 1,
+      "failed": 0,
+      "unscored": 0,
+      "accuracy": 1.0
+    },
+    "cases": [
+      {
+        "case_id": "arithmetic",
+        "split": "validation",
+        "role": "target",
+        "outcome": "fail",
+        "output": "2 + 3 = 5",
+        "expected": "5",
+        "scorer": "exact",
+        "score": 0.0,
+        "reason": "exact mismatch"
+      },
+      {
+        "case_id": "format",
+        "split": "validation",
+        "role": "target",
+        "outcome": "fail",
+        "output": "OK.",
+        "expected": "OK",
+        "scorer": "exact",
+        "score": 0.0,
+        "reason": "exact mismatch"
+      },
+      {
+        "case_id": "regression",
+        "split": "validation",
+        "role": "regression",
+        "outcome": "pass",
+        "output": "Paris",
+        "expected": "Paris",
+        "scorer": "exact",
+        "score": 1.0,
+        "reason": "exact match"
+      }
+    ]
+  }
+}

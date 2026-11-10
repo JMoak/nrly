@@ -1,0 +1,12 @@
+{
+  "name": "weight replacement requires a matching explicit tensor shape",
+  "tool": "submit_experiment",
+  "args": {
+    "spec": {
+      "name": "invalid-shape",
+      "program": { "kind": "weight_replace", "target": "output.weight", "shape": [2, 2], "values": [1] },
+      "cases": [{ "id": "one", "input": "[2, 4]", "expected": "6", "scorer": "numeric" }]
+    }
+  },
+  "expectError": { "message": { "$regex": "shape|validation", "flags": "i" } }
+}

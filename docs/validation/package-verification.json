@@ -1,0 +1,14 @@
+{
+  "wheel_import": "C:\\src\\nrly\\dist\\nrly-0.1.0a1-py3-none-any.whl\\nrly\\__init__.py",
+  "wheel_members": 22,
+  "source_members": 78,
+  "source_excludes_caches_models_dependencies": true,
+  "demo_candidate_accuracy": 1.0,
+  "demo_base_restored": true,
+  "replay": {
+    "original_run": "ff8b5709458242fea489ec14495b6abd",
+    "outputs_match": true,
+    "inspection_matches": null,
+    "identity_matches": true
+  }
+}

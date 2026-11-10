@@ -1,0 +1,6 @@
+{
+  "name": "unknown study is an explicit domain error",
+  "tool": "get_study",
+  "args": { "study_id": "00000000000000000000000000000000" },
+  "expectError": { "message": { "$regex": "study_not_found" } }
+}

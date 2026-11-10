@@ -1,0 +1,64 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "nrly-tasks/1",
+      "default": "nrly-tasks/1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "multiple_choice",
+        "json",
+        "instruction_constraints"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "choices": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 26,
+      "title": "Choices",
+      "type": "array"
+    },
+    "required": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 16,
+      "title": "Required",
+      "type": "array"
+    },
+    "forbidden": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 16,
+      "title": "Forbidden",
+      "type": "array"
+    },
+    "max_chars": {
+      "anyOf": [
+        {
+          "maximum": 1000000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Chars"
+    }
+  },
+  "required": [
+    "kind"
+  ],
+  "title": "TaskAdapterSpec",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

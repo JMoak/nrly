@@ -1,0 +1,28 @@
+{
+  "name": "nrly-contract-tests",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Development-only MCP contract checks for the nrly Python runtime",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:client": "node node_modules/typescript/bin/tsc -p packages/client",
+    "check:client": "node node_modules/typescript/bin/tsc -p packages/client --noEmit",
+    "check:client:consumers": "node node_modules/typescript/bin/tsc --noEmit --strict --skipLibCheck --target ES2022 --module NodeNext --moduleResolution NodeNext packages/client/test/consumer.types.ts",
+    "test:client": "npm run build:client && npm run check:client:consumers && node --test packages/client/test/*.test.mjs",
+    "test:mcp": "npm run build:client && node tests/mcp/run.mjs run && node --test --test-concurrency=1 tests/mcp/*.test.mjs",
+    "test:mcp:cases": "node tests/mcp/run.mjs run",
+    "test:mcp:lifecycle": "node --test tests/mcp/lifecycle.test.mjs",
+    "test:mcp:sdk": "npm run build:client && node --test tests/mcp/sdk.test.mjs",
+    "test:keywork": "npm run build:client && bun tests/mcp/keywork.mjs",
+    "mcp:manifest:record": "node tests/mcp/run.mjs manifest record",
+    "mcp:manifest:check": "node tests/mcp/run.mjs manifest diff"
+  },
+  "devDependencies": {
+    "@jmoak/vibrissa": "2.0.0",
+    "typescript": "5.9.3"
+  }
+}

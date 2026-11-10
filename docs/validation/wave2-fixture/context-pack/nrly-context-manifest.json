@@ -1,0 +1,18 @@
+{
+  "files_sha256": {
+    ".ai/context/@nrly/weight-space/active/PLAN.md": "3edeed5b42022517ece406466fc834f4e6f6d37884cfd605e34a5067b140e226",
+    ".ai/modules/@nrly/weight-space/generators/identity-candidate.json": "cb0379302c7be962be7b1ee2c681febc0be2cec624202d982d1fa0e68c6f86c1",
+    ".ai/modules/@nrly/weight-space/knowledge/public-evidence.json": "b793bd94c383828d45744603302111260de99747deab287912a9850c8659c9cd",
+    ".ai/modules/@nrly/weight-space/rules.md": "cc05861ce2b2c18fe2fd64747697111954efdc72f106213a7185d2c6343b070e",
+    "README.md": "1048840468737fc6d9452de2ce94f8f7098d3ab8dd0411db94d956049a6b541d"
+  },
+  "integrity_limit": "checksums detect changed bytes; they do not prove scientific claims",
+  "layout": "CorePack-AI Unified Context Protocol",
+  "schema": "nrly-context-pack/0.1",
+  "study_id": "80462b98676146f1a9d15c0930a5496a",
+  "upstream_commit": "c8c637e554ed86cef6acaa2827fd839d68661935",
+  "upstream_document_version": "1.0",
+  "upstream_readme_blob": "e096dabf213824f63020c5c4774916d258949277",
+  "upstream_url": "https://github.com/CorePack-AI/ucp-spec/blob/c8c637e554ed86cef6acaa2827fd839d68661935/README.md",
+  "validation": "nrly checks; inspected upstream supplies no conformance suite"
+}

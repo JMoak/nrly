@@ -1,0 +1,11 @@
+{
+  "name": "@nrly/client",
+  "version": "0.3.0-alpha.1",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Transport-injected TypeScript client for the nrly MCP application",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist", "LICENSE"],
+  "engines": { "node": ">=20" }
+}

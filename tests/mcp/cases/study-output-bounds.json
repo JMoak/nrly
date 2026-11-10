@@ -1,0 +1,11 @@
+{
+  "name": "development output rejects a negative character offset",
+  "tool": "get_study_samples",
+  "args": {
+    "study_id": "00000000000000000000000000000000",
+    "attempt_id": "00000000000000000000000000000000",
+    "arm": "candidate",
+    "output_offset": -1
+  },
+  "expectError": { "message": { "$regex": "invalid_request" } }
+}

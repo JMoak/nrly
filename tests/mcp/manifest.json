@@ -1,0 +1,2311 @@
+{
+  "vibrissa": 2,
+  "protocolVersion": "2026-07-28",
+  "server": {
+    "name": "nrly",
+    "version": "0.3.0a1"
+  },
+  "capabilities": {
+    "prompts": {
+      "listChanged": true
+    },
+    "resources": {
+      "listChanged": true,
+      "subscribe": true
+    },
+    "tools": {
+      "listChanged": true
+    }
+  },
+  "instructions": "Weight-space programming workbench. Inspect exact parameters before editing. Submit a pinned baseline, candidate, and independent regression cases. Submission returns immediately: poll get_run until terminal. Failed/unscored runs are not evidence of improvement. Tiny results are engineering fixtures. Activation interventions are diagnostic.",
+  "tools": [
+    {
+      "name": "cancel_run",
+      "description": "Cancel an owned queued/running job; completed records remain immutable.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "cancel_runArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "cancel_runDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "cancel_study_attempt",
+      "description": "Request candidate cancellation; consumed study reservations are not refunded.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "attempt_id": {
+            "title": "Attempt Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "study_id",
+          "attempt_id"
+        ],
+        "title": "cancel_study_attemptArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "cancel_study_attemptDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "cancel_study_final",
+      "description": "Stop final evaluation; the nominee remains frozen and the result is inconclusive.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "study_id"
+        ],
+        "title": "cancel_study_finalArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "cancel_study_finalDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "capabilities",
+      "description": "Discover supported backends, operations and limits without loading a model.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "title": "capabilitiesArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "capabilitiesDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "compare_runs",
+      "description": "Compare compatible scored runs, exposing improvements and regressions separately.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "baseline_id": {
+            "title": "Baseline Id",
+            "type": "string"
+          },
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "baseline_id",
+          "candidate_id"
+        ],
+        "title": "compare_runsArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "compare_runsDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "finalize_study",
+      "description": "Freeze one completed nominee and queue its one-shot held-out evaluation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "attempt_id": {
+            "title": "Attempt Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "study_id",
+          "attempt_id"
+        ],
+        "title": "finalize_studyArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "finalize_studyDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_capture",
+      "description": "Page stored activation values with their capture position and invocation metadata.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 64,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_id",
+          "case_id",
+          "target"
+        ],
+        "title": "get_captureArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_captureDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_diagnostics",
+      "description": "Page teacher-forced token probabilities; these are not generated task outcomes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 8,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "top_k_offset": {
+            "default": 0,
+            "title": "Top K Offset",
+            "type": "integer"
+          },
+          "top_k_limit": {
+            "default": 3,
+            "title": "Top K Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_id",
+          "case_id"
+        ],
+        "title": "get_diagnosticsArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_diagnosticsDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_inspection",
+      "description": "Page a completed run's tensor catalog and captured pre-edit weights.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 40,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "weight_target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Weight Target"
+          },
+          "value_offset": {
+            "default": 0,
+            "title": "Value Offset",
+            "type": "integer"
+          },
+          "value_limit": {
+            "default": 32,
+            "title": "Value Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "get_inspectionArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_inspectionDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_run",
+      "description": "Read status/results; large records return an explicit summary and artifact handle.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "get_runArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_runDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_sample",
+      "description": "Read one sample, bounded output text, captures and exact weight-change evidence.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "output_offset": {
+            "default": 0,
+            "title": "Output Offset",
+            "type": "integer"
+          },
+          "output_limit": {
+            "default": 2000,
+            "title": "Output Limit",
+            "type": "integer"
+          },
+          "change_offset": {
+            "default": 0,
+            "title": "Change Offset",
+            "type": "integer"
+          },
+          "change_limit": {
+            "default": 4,
+            "title": "Change Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_id",
+          "case_id"
+        ],
+        "title": "get_sampleArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_sampleDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_samples",
+      "description": "Enumerate bounded sample summaries, including when the complete run is truncated.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 20,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "get_samplesArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_samplesDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_study",
+      "description": "Read study design summary, cumulative reservations and aggregate final evidence.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "target_offset": {
+            "default": 0,
+            "title": "Target Offset",
+            "type": "integer"
+          },
+          "target_limit": {
+            "default": 16,
+            "title": "Target Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "study_id"
+        ],
+        "title": "get_studyArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_studyDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_study_assessment",
+      "description": "Page complete assessment JSON; omit attempt_id for public aggregate final evidence.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "attempt_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Attempt Id"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 4000,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "study_id"
+        ],
+        "title": "get_study_assessmentArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_study_assessmentDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_study_attempt",
+      "description": "Read a candidate attempt's status and aggregate development assessment.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "attempt_id": {
+            "title": "Attempt Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "study_id",
+          "attempt_id"
+        ],
+        "title": "get_study_attemptArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_study_attemptDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_study_case_messages",
+      "description": "Read bounded chat messages for development cases only; never sealed holdout text.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 4,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "content_offset": {
+            "default": 0,
+            "title": "Content Offset",
+            "type": "integer"
+          },
+          "content_limit": {
+            "default": 1000,
+            "title": "Content Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "study_id",
+          "case_id"
+        ],
+        "title": "get_study_case_messagesArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_study_case_messagesDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_study_case_spec",
+      "description": "Page complete development case JSON including chat and scoring constraints.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 4000,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "study_id",
+          "case_id"
+        ],
+        "title": "get_study_case_specArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_study_case_specDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_study_cases",
+      "description": "Page public development cases and expectations; never returns held-out cases.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 5,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "input_offset": {
+            "default": 0,
+            "title": "Input Offset",
+            "type": "integer"
+          },
+          "input_limit": {
+            "default": 1000,
+            "title": "Input Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "study_id"
+        ],
+        "title": "get_study_casesArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_study_casesDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_study_comparator",
+      "description": "Page registered comparator configuration and its measured model identity.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "comparator": {
+            "title": "Comparator",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 4000,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "study_id",
+          "comparator"
+        ],
+        "title": "get_study_comparatorArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_study_comparatorDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_study_samples",
+      "description": "Read bounded development outputs for baseline/no_op/control:NAME/candidate arms.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "attempt_id": {
+            "title": "Attempt Id",
+            "type": "string"
+          },
+          "arm": {
+            "title": "Arm",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 5,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "output_limit": {
+            "default": 512,
+            "title": "Output Limit",
+            "type": "integer"
+          },
+          "output_offset": {
+            "default": 0,
+            "title": "Output Offset",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "study_id",
+          "attempt_id",
+          "arm"
+        ],
+        "title": "get_study_samplesArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_study_samplesDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_runs",
+      "description": "List the latest local run summaries.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "default": 20,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "list_runsArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "list_runsDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_studies",
+      "description": "Find operator-provisioned studies without accessing sealed cases.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "default": 20,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "list_studiesArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "list_studiesDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_study_attempts",
+      "description": "Page all candidate attempts, preserving unsuccessful and cancelled attempts.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 20,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "study_id"
+        ],
+        "title": "list_study_attemptsArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "list_study_attemptsDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "submit_experiment",
+      "description": "Queue a bounded experiment; identical request IDs are idempotent.",
+      "inputSchema": {
+        "type": "object",
+        "$defs": {
+          "BudgetSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "wall_seconds": {
+                "default": 120,
+                "exclusiveMinimum": 0,
+                "maximum": 86400,
+                "title": "Wall Seconds",
+                "type": "number"
+              },
+              "max_cases": {
+                "default": 100,
+                "maximum": 10000,
+                "minimum": 1,
+                "title": "Max Cases",
+                "type": "integer"
+              },
+              "max_output_tokens": {
+                "default": 4096,
+                "maximum": 1000000,
+                "minimum": 1,
+                "title": "Max Output Tokens",
+                "type": "integer"
+              },
+              "max_capture_bytes": {
+                "default": 262144,
+                "maximum": 100000000,
+                "minimum": 0,
+                "title": "Max Capture Bytes",
+                "type": "integer"
+              }
+            },
+            "title": "BudgetSpec",
+            "type": "object"
+          },
+          "CaptureSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "target": {
+                "maxLength": 200,
+                "minLength": 1,
+                "title": "Target",
+                "type": "string"
+              },
+              "max_elements": {
+                "default": 16,
+                "maximum": 4096,
+                "minimum": 1,
+                "title": "Max Elements",
+                "type": "integer"
+              },
+              "token_positions": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 128,
+                "title": "Token Positions",
+                "type": "array"
+              },
+              "invocation": {
+                "default": "latest",
+                "enum": [
+                  "first",
+                  "latest"
+                ],
+                "title": "Invocation",
+                "type": "string"
+              },
+              "source": {
+                "default": "output",
+                "enum": [
+                  "input",
+                  "output"
+                ],
+                "title": "Source",
+                "type": "string"
+              }
+            },
+            "required": [
+              "target"
+            ],
+            "title": "CaptureSpec",
+            "type": "object"
+          },
+          "CaseSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "maxLength": 120,
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]*$",
+                "title": "Id",
+                "type": "string"
+              },
+              "input": {
+                "anyOf": [
+                  {
+                    "maxLength": 100000,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Input"
+              },
+              "expected": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Expected"
+              },
+              "scorer": {
+                "default": "exact",
+                "enum": [
+                  "exact",
+                  "numeric",
+                  "final_number"
+                ],
+                "title": "Scorer",
+                "type": "string"
+              },
+              "tolerance": {
+                "default": 0.000001,
+                "maximum": 1,
+                "minimum": 0,
+                "title": "Tolerance",
+                "type": "number"
+              },
+              "split": {
+                "default": "discovery",
+                "enum": [
+                  "discovery",
+                  "validation",
+                  "test"
+                ],
+                "title": "Split",
+                "type": "string"
+              },
+              "role": {
+                "default": "target",
+                "enum": [
+                  "target",
+                  "regression"
+                ],
+                "title": "Role",
+                "type": "string"
+              },
+              "messages": {
+                "items": {
+                  "$ref": "#/$defs/ChatMessage"
+                },
+                "maxItems": 128,
+                "title": "Messages",
+                "type": "array"
+              },
+              "continuation": {
+                "anyOf": [
+                  {
+                    "maxLength": 100000,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Continuation"
+              },
+              "group": {
+                "anyOf": [
+                  {
+                    "maxLength": 120,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Group"
+              },
+              "adapter": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/TaskAdapterSpec"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "title": "CaseSpec",
+            "type": "object"
+          },
+          "ChatMessage": {
+            "additionalProperties": false,
+            "properties": {
+              "role": {
+                "enum": [
+                  "system",
+                  "user",
+                  "assistant"
+                ],
+                "title": "Role",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 100000,
+                "minLength": 1,
+                "title": "Content",
+                "type": "string"
+              }
+            },
+            "required": [
+              "role",
+              "content"
+            ],
+            "title": "ChatMessage",
+            "type": "object"
+          },
+          "DiagnosticSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "top_k": {
+                "default": 5,
+                "maximum": 50,
+                "minimum": 0,
+                "title": "Top K",
+                "type": "integer"
+              },
+              "max_tokens": {
+                "default": 4096,
+                "maximum": 32768,
+                "minimum": 1,
+                "title": "Max Tokens",
+                "type": "integer"
+              },
+              "max_logits_elements": {
+                "default": 67108864,
+                "maximum": 268435456,
+                "minimum": 1,
+                "title": "Max Logits Elements",
+                "type": "integer"
+              }
+            },
+            "title": "DiagnosticSpec",
+            "type": "object"
+          },
+          "ExperimentSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "schema_version": {
+                "default": "0.2",
+                "enum": [
+                  "0.1",
+                  "0.2",
+                  "0.3"
+                ],
+                "title": "Schema Version",
+                "type": "string"
+              },
+              "name": {
+                "maxLength": 160,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "purpose": {
+                "default": "experiment",
+                "enum": [
+                  "experiment",
+                  "inspection"
+                ],
+                "title": "Purpose",
+                "type": "string"
+              },
+              "model": {
+                "$ref": "#/$defs/ModelSpec"
+              },
+              "program": {
+                "$ref": "#/$defs/ProgramSpec"
+              },
+              "generation": {
+                "$ref": "#/$defs/GenerationSpec"
+              },
+              "cases": {
+                "items": {
+                  "$ref": "#/$defs/CaseSpec"
+                },
+                "maxItems": 10000,
+                "title": "Cases",
+                "type": "array"
+              },
+              "captures": {
+                "items": {
+                  "$ref": "#/$defs/CaptureSpec"
+                },
+                "maxItems": 8,
+                "title": "Captures",
+                "type": "array"
+              },
+              "weight_reads": {
+                "items": {
+                  "$ref": "#/$defs/WeightReadSpec"
+                },
+                "maxItems": 8,
+                "title": "Weight Reads",
+                "type": "array"
+              },
+              "budget": {
+                "$ref": "#/$defs/BudgetSpec"
+              },
+              "diagnostics": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/DiagnosticSpec"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "title": "ExperimentSpec",
+            "type": "object"
+          },
+          "GenerationSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "max_new_tokens": {
+                "default": 32,
+                "maximum": 32768,
+                "minimum": 1,
+                "title": "Max New Tokens",
+                "type": "integer"
+              },
+              "temperature": {
+                "default": 0,
+                "maximum": 2,
+                "minimum": 0,
+                "title": "Temperature",
+                "type": "number"
+              },
+              "seed": {
+                "default": 0,
+                "maximum": 4294967295,
+                "minimum": 0,
+                "title": "Seed",
+                "type": "integer"
+              },
+              "enable_thinking": {
+                "default": false,
+                "title": "Enable Thinking",
+                "type": "boolean"
+              },
+              "top_p": {
+                "anyOf": [
+                  {
+                    "exclusiveMinimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Top P"
+              },
+              "top_k": {
+                "anyOf": [
+                  {
+                    "maximum": 1000,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Top K"
+              },
+              "min_new_tokens": {
+                "anyOf": [
+                  {
+                    "maximum": 32768,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Min New Tokens"
+              },
+              "repetition_penalty": {
+                "anyOf": [
+                  {
+                    "exclusiveMinimum": 0,
+                    "maximum": 10,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Repetition Penalty"
+              }
+            },
+            "title": "GenerationSpec",
+            "type": "object"
+          },
+          "ModelSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "backend": {
+                "default": "tiny",
+                "enum": [
+                  "tiny",
+                  "huggingface"
+                ],
+                "title": "Backend",
+                "type": "string"
+              },
+              "model_id": {
+                "default": "nrly/tiny-sum-v1",
+                "title": "Model Id",
+                "type": "string"
+              },
+              "revision": {
+                "default": "1",
+                "title": "Revision",
+                "type": "string"
+              },
+              "device": {
+                "default": "cpu",
+                "enum": [
+                  "cpu",
+                  "cuda",
+                  "auto"
+                ],
+                "title": "Device",
+                "type": "string"
+              },
+              "dtype": {
+                "default": "float32",
+                "enum": [
+                  "float32",
+                  "float16",
+                  "bfloat16"
+                ],
+                "title": "Dtype",
+                "type": "string"
+              },
+              "local_files_only": {
+                "default": true,
+                "title": "Local Files Only",
+                "type": "boolean"
+              }
+            },
+            "title": "ModelSpec",
+            "type": "object"
+          },
+          "ProgramSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "target": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Target"
+              },
+              "factor": {
+                "default": 1,
+                "title": "Factor",
+                "type": "number"
+              },
+              "values": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Values",
+                "type": "array"
+              },
+              "shape": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 8,
+                "title": "Shape",
+                "type": "array"
+              },
+              "indices": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 65536,
+                "title": "Indices",
+                "type": "array"
+              },
+              "position": {
+                "default": "all",
+                "enum": [
+                  "all",
+                  "last"
+                ],
+                "title": "Position",
+                "type": "string"
+              },
+              "rank": {
+                "anyOf": [
+                  {
+                    "maximum": 256,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Rank"
+              },
+              "left": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Left",
+                "type": "array"
+              },
+              "right": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Right",
+                "type": "array"
+              },
+              "slices": {
+                "items": {
+                  "$ref": "#/$defs/TensorSlice"
+                },
+                "maxItems": 8,
+                "title": "Slices",
+                "type": "array"
+              },
+              "kind": {
+                "default": "identity",
+                "enum": [
+                  "identity",
+                  "activation_scale",
+                  "activation_add",
+                  "weight_scale",
+                  "weight_replace",
+                  "weight_patch",
+                  "weight_add",
+                  "weight_sparse_add",
+                  "weight_low_rank",
+                  "weight_slice_scale",
+                  "pipeline"
+                ],
+                "title": "Kind",
+                "type": "string"
+              },
+              "expected_base": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Expected Base"
+              },
+              "operations": {
+                "items": {
+                  "$ref": "#/$defs/WeightOperationSpec"
+                },
+                "maxItems": 32,
+                "title": "Operations",
+                "type": "array"
+              }
+            },
+            "title": "ProgramSpec",
+            "type": "object"
+          },
+          "TaskAdapterSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "schema_version": {
+                "const": "nrly-tasks/1",
+                "default": "nrly-tasks/1",
+                "title": "Schema Version",
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "multiple_choice",
+                  "json",
+                  "instruction_constraints"
+                ],
+                "title": "Kind",
+                "type": "string"
+              },
+              "choices": {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 26,
+                "title": "Choices",
+                "type": "array"
+              },
+              "required": {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 16,
+                "title": "Required",
+                "type": "array"
+              },
+              "forbidden": {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 16,
+                "title": "Forbidden",
+                "type": "array"
+              },
+              "max_chars": {
+                "anyOf": [
+                  {
+                    "maximum": 1000000,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Max Chars"
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "title": "TaskAdapterSpec",
+            "type": "object"
+          },
+          "TensorSlice": {
+            "additionalProperties": false,
+            "properties": {
+              "start": {
+                "default": 0,
+                "maximum": 9223372036854776000,
+                "minimum": 0,
+                "title": "Start",
+                "type": "integer"
+              },
+              "stop": {
+                "maximum": 9223372036854776000,
+                "minimum": 1,
+                "title": "Stop",
+                "type": "integer"
+              },
+              "step": {
+                "default": 1,
+                "maximum": 9223372036854776000,
+                "minimum": 1,
+                "title": "Step",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "stop"
+            ],
+            "title": "TensorSlice",
+            "type": "object"
+          },
+          "WeightOperationSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "target": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Target"
+              },
+              "factor": {
+                "default": 1,
+                "title": "Factor",
+                "type": "number"
+              },
+              "values": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Values",
+                "type": "array"
+              },
+              "shape": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 8,
+                "title": "Shape",
+                "type": "array"
+              },
+              "indices": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 65536,
+                "title": "Indices",
+                "type": "array"
+              },
+              "position": {
+                "default": "all",
+                "enum": [
+                  "all",
+                  "last"
+                ],
+                "title": "Position",
+                "type": "string"
+              },
+              "rank": {
+                "anyOf": [
+                  {
+                    "maximum": 256,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Rank"
+              },
+              "left": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Left",
+                "type": "array"
+              },
+              "right": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Right",
+                "type": "array"
+              },
+              "slices": {
+                "items": {
+                  "$ref": "#/$defs/TensorSlice"
+                },
+                "maxItems": 8,
+                "title": "Slices",
+                "type": "array"
+              },
+              "kind": {
+                "enum": [
+                  "weight_scale",
+                  "weight_replace",
+                  "weight_patch",
+                  "weight_add",
+                  "weight_sparse_add",
+                  "weight_low_rank",
+                  "weight_slice_scale"
+                ],
+                "title": "Kind",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "title": "WeightOperationSpec",
+            "type": "object"
+          },
+          "WeightReadSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "target": {
+                "maxLength": 200,
+                "minLength": 1,
+                "title": "Target",
+                "type": "string"
+              },
+              "max_elements": {
+                "default": 16,
+                "maximum": 4096,
+                "minimum": 1,
+                "title": "Max Elements",
+                "type": "integer"
+              },
+              "token_positions": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 128,
+                "title": "Token Positions",
+                "type": "array"
+              },
+              "invocation": {
+                "default": "latest",
+                "enum": [
+                  "first",
+                  "latest"
+                ],
+                "title": "Invocation",
+                "type": "string"
+              },
+              "source": {
+                "default": "output",
+                "enum": [
+                  "input",
+                  "output"
+                ],
+                "title": "Source",
+                "type": "string"
+              },
+              "offset": {
+                "default": 0,
+                "maximum": 9223372036854776000,
+                "minimum": 0,
+                "title": "Offset",
+                "type": "integer"
+              },
+              "indices": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 4096,
+                "title": "Indices",
+                "type": "array"
+              },
+              "coordinates": {
+                "items": {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                "maxItems": 4096,
+                "title": "Coordinates",
+                "type": "array"
+              },
+              "slices": {
+                "items": {
+                  "$ref": "#/$defs/TensorSlice"
+                },
+                "maxItems": 8,
+                "title": "Slices",
+                "type": "array"
+              }
+            },
+            "required": [
+              "target"
+            ],
+            "title": "WeightReadSpec",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "spec": {
+            "$ref": "#/$defs/ExperimentSpec"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Request Id"
+          }
+        },
+        "required": [
+          "spec"
+        ],
+        "title": "submit_experimentArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "submit_experimentDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "submit_inspection",
+      "description": "Queue a model catalog and bounded parameter reads without forward passes.",
+      "inputSchema": {
+        "type": "object",
+        "$defs": {
+          "ModelSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "backend": {
+                "default": "tiny",
+                "enum": [
+                  "tiny",
+                  "huggingface"
+                ],
+                "title": "Backend",
+                "type": "string"
+              },
+              "model_id": {
+                "default": "nrly/tiny-sum-v1",
+                "title": "Model Id",
+                "type": "string"
+              },
+              "revision": {
+                "default": "1",
+                "title": "Revision",
+                "type": "string"
+              },
+              "device": {
+                "default": "cpu",
+                "enum": [
+                  "cpu",
+                  "cuda",
+                  "auto"
+                ],
+                "title": "Device",
+                "type": "string"
+              },
+              "dtype": {
+                "default": "float32",
+                "enum": [
+                  "float32",
+                  "float16",
+                  "bfloat16"
+                ],
+                "title": "Dtype",
+                "type": "string"
+              },
+              "local_files_only": {
+                "default": true,
+                "title": "Local Files Only",
+                "type": "boolean"
+              }
+            },
+            "title": "ModelSpec",
+            "type": "object"
+          },
+          "TensorSlice": {
+            "additionalProperties": false,
+            "properties": {
+              "start": {
+                "default": 0,
+                "maximum": 9223372036854776000,
+                "minimum": 0,
+                "title": "Start",
+                "type": "integer"
+              },
+              "stop": {
+                "maximum": 9223372036854776000,
+                "minimum": 1,
+                "title": "Stop",
+                "type": "integer"
+              },
+              "step": {
+                "default": 1,
+                "maximum": 9223372036854776000,
+                "minimum": 1,
+                "title": "Step",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "stop"
+            ],
+            "title": "TensorSlice",
+            "type": "object"
+          },
+          "WeightReadSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "target": {
+                "maxLength": 200,
+                "minLength": 1,
+                "title": "Target",
+                "type": "string"
+              },
+              "max_elements": {
+                "default": 16,
+                "maximum": 4096,
+                "minimum": 1,
+                "title": "Max Elements",
+                "type": "integer"
+              },
+              "token_positions": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 128,
+                "title": "Token Positions",
+                "type": "array"
+              },
+              "invocation": {
+                "default": "latest",
+                "enum": [
+                  "first",
+                  "latest"
+                ],
+                "title": "Invocation",
+                "type": "string"
+              },
+              "source": {
+                "default": "output",
+                "enum": [
+                  "input",
+                  "output"
+                ],
+                "title": "Source",
+                "type": "string"
+              },
+              "offset": {
+                "default": 0,
+                "maximum": 9223372036854776000,
+                "minimum": 0,
+                "title": "Offset",
+                "type": "integer"
+              },
+              "indices": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 4096,
+                "title": "Indices",
+                "type": "array"
+              },
+              "coordinates": {
+                "items": {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                "maxItems": 4096,
+                "title": "Coordinates",
+                "type": "array"
+              },
+              "slices": {
+                "items": {
+                  "$ref": "#/$defs/TensorSlice"
+                },
+                "maxItems": 8,
+                "title": "Slices",
+                "type": "array"
+              }
+            },
+            "required": [
+              "target"
+            ],
+            "title": "WeightReadSpec",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "model": {
+            "$ref": "#/$defs/ModelSpec"
+          },
+          "weight_reads": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/WeightReadSpec"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Weight Reads"
+          },
+          "name": {
+            "default": "Model inspection",
+            "title": "Name",
+            "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Request Id"
+          }
+        },
+        "required": [
+          "model"
+        ],
+        "title": "submit_inspectionArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "submit_inspectionDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "submit_study_candidate",
+      "description": "Admit a frozen candidate and queue baseline/control/candidate development runs.",
+      "inputSchema": {
+        "type": "object",
+        "$defs": {
+          "CandidateSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 120,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "program": {
+                "$ref": "#/$defs/ProgramSpec"
+              }
+            },
+            "required": [
+              "name",
+              "program"
+            ],
+            "title": "CandidateSpec",
+            "type": "object"
+          },
+          "ProgramSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "target": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Target"
+              },
+              "factor": {
+                "default": 1,
+                "title": "Factor",
+                "type": "number"
+              },
+              "values": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Values",
+                "type": "array"
+              },
+              "shape": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 8,
+                "title": "Shape",
+                "type": "array"
+              },
+              "indices": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 65536,
+                "title": "Indices",
+                "type": "array"
+              },
+              "position": {
+                "default": "all",
+                "enum": [
+                  "all",
+                  "last"
+                ],
+                "title": "Position",
+                "type": "string"
+              },
+              "rank": {
+                "anyOf": [
+                  {
+                    "maximum": 256,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Rank"
+              },
+              "left": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Left",
+                "type": "array"
+              },
+              "right": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Right",
+                "type": "array"
+              },
+              "slices": {
+                "items": {
+                  "$ref": "#/$defs/TensorSlice"
+                },
+                "maxItems": 8,
+                "title": "Slices",
+                "type": "array"
+              },
+              "kind": {
+                "default": "identity",
+                "enum": [
+                  "identity",
+                  "activation_scale",
+                  "activation_add",
+                  "weight_scale",
+                  "weight_replace",
+                  "weight_patch",
+                  "weight_add",
+                  "weight_sparse_add",
+                  "weight_low_rank",
+                  "weight_slice_scale",
+                  "pipeline"
+                ],
+                "title": "Kind",
+                "type": "string"
+              },
+              "expected_base": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Expected Base"
+              },
+              "operations": {
+                "items": {
+                  "$ref": "#/$defs/WeightOperationSpec"
+                },
+                "maxItems": 32,
+                "title": "Operations",
+                "type": "array"
+              }
+            },
+            "title": "ProgramSpec",
+            "type": "object"
+          },
+          "TensorSlice": {
+            "additionalProperties": false,
+            "properties": {
+              "start": {
+                "default": 0,
+                "maximum": 9223372036854776000,
+                "minimum": 0,
+                "title": "Start",
+                "type": "integer"
+              },
+              "stop": {
+                "maximum": 9223372036854776000,
+                "minimum": 1,
+                "title": "Stop",
+                "type": "integer"
+              },
+              "step": {
+                "default": 1,
+                "maximum": 9223372036854776000,
+                "minimum": 1,
+                "title": "Step",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "stop"
+            ],
+            "title": "TensorSlice",
+            "type": "object"
+          },
+          "WeightOperationSpec": {
+            "additionalProperties": false,
+            "properties": {
+              "target": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Target"
+              },
+              "factor": {
+                "default": 1,
+                "title": "Factor",
+                "type": "number"
+              },
+              "values": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Values",
+                "type": "array"
+              },
+              "shape": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 8,
+                "title": "Shape",
+                "type": "array"
+              },
+              "indices": {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 65536,
+                "title": "Indices",
+                "type": "array"
+              },
+              "position": {
+                "default": "all",
+                "enum": [
+                  "all",
+                  "last"
+                ],
+                "title": "Position",
+                "type": "string"
+              },
+              "rank": {
+                "anyOf": [
+                  {
+                    "maximum": 256,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Rank"
+              },
+              "left": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Left",
+                "type": "array"
+              },
+              "right": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 65536,
+                "title": "Right",
+                "type": "array"
+              },
+              "slices": {
+                "items": {
+                  "$ref": "#/$defs/TensorSlice"
+                },
+                "maxItems": 8,
+                "title": "Slices",
+                "type": "array"
+              },
+              "kind": {
+                "enum": [
+                  "weight_scale",
+                  "weight_replace",
+                  "weight_patch",
+                  "weight_add",
+                  "weight_sparse_add",
+                  "weight_low_rank",
+                  "weight_slice_scale"
+                ],
+                "title": "Kind",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "title": "WeightOperationSpec",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "study_id": {
+            "title": "Study Id",
+            "type": "string"
+          },
+          "candidate": {
+            "$ref": "#/$defs/CandidateSpec"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Request Id"
+          }
+        },
+        "required": [
+          "study_id",
+          "candidate"
+        ],
+        "title": "submit_study_candidateArguments"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "submit_study_candidateDictOutput",
+        "type": "object"
+      }
+    }
+  ],
+  "resources": [],
+  "resourceTemplates": [],
+  "prompts": [],
+  "listMeta": {
+    "tools": {
+      "ttlMs": 0,
+      "cacheScope": "private"
+    },
+    "resources": {
+      "ttlMs": 0,
+      "cacheScope": "private"
+    },
+    "resourceTemplates": {
+      "ttlMs": 0,
+      "cacheScope": "private"
+    },
+    "prompts": {
+      "ttlMs": 0,
+      "cacheScope": "private"
+    }
+  }
+}

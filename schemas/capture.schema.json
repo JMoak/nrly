@@ -1,0 +1,50 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "target": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Target",
+      "type": "string"
+    },
+    "max_elements": {
+      "default": 16,
+      "maximum": 4096,
+      "minimum": 1,
+      "title": "Max Elements",
+      "type": "integer"
+    },
+    "token_positions": {
+      "items": {
+        "type": "integer"
+      },
+      "maxItems": 128,
+      "title": "Token Positions",
+      "type": "array"
+    },
+    "invocation": {
+      "default": "latest",
+      "enum": [
+        "first",
+        "latest"
+      ],
+      "title": "Invocation",
+      "type": "string"
+    },
+    "source": {
+      "default": "output",
+      "enum": [
+        "input",
+        "output"
+      ],
+      "title": "Source",
+      "type": "string"
+    }
+  },
+  "required": [
+    "target"
+  ],
+  "title": "CaptureSpec",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/@jmoak/vibrissa/schema/vibrissa.schema.json",
+  "servers": {
+    "nrly": {
+      "cmd": "${NRLY_TEST_PYTHON}",
+      "args": ["-m", "nrly.mcp", "--root", "${NRLY_TEST_ROOT}"],
+      "cwd": ".",
+      "protocol": "auto",
+      "spawnTimeoutMs": 15000
+    }
+  },
+  "defaultServer": "nrly",
+  "globs": ["tests/mcp/cases/**/*.json"],
+  "manifest": "tests/mcp/manifest.json",
+  "requireManifest": true,
+  "timeoutMs": 15000,
+  "concurrency": 1,
+  "reporters": ["console"],
+  "outDir": ".cache/mcp-reports"
+}

@@ -1,0 +1,357 @@
+{
+  "$defs": {
+    "ArmSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "arm": {
+          "title": "Arm",
+          "type": "string"
+        },
+        "status": {
+          "title": "Status",
+          "type": "string"
+        },
+        "complete": {
+          "title": "Complete",
+          "type": "boolean"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "integer"
+        },
+        "target_total": {
+          "title": "Target Total",
+          "type": "integer"
+        },
+        "target_passed": {
+          "title": "Target Passed",
+          "type": "integer"
+        },
+        "regression_total": {
+          "title": "Regression Total",
+          "type": "integer"
+        },
+        "regression_passed": {
+          "title": "Regression Passed",
+          "type": "integer"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Seed"
+        },
+        "groups": {
+          "items": {
+            "$ref": "#/$defs/StudyGroupSummary"
+          },
+          "title": "Groups",
+          "type": "array"
+        }
+      },
+      "required": [
+        "arm",
+        "status",
+        "complete",
+        "total",
+        "passed",
+        "target_total",
+        "target_passed",
+        "regression_total",
+        "regression_passed"
+      ],
+      "title": "ArmSummary",
+      "type": "object"
+    },
+    "PairedGroupSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "group": {
+          "title": "Group",
+          "type": "string"
+        },
+        "improved": {
+          "title": "Improved",
+          "type": "integer"
+        },
+        "regressed": {
+          "title": "Regressed",
+          "type": "integer"
+        },
+        "unchanged": {
+          "title": "Unchanged",
+          "type": "integer"
+        },
+        "variation": {
+          "$ref": "#/$defs/SeedVariation"
+        }
+      },
+      "required": [
+        "group",
+        "improved",
+        "regressed",
+        "unchanged",
+        "variation"
+      ],
+      "title": "PairedGroupSummary",
+      "type": "object"
+    },
+    "PairedSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "reference": {
+          "title": "Reference",
+          "type": "string"
+        },
+        "comparable": {
+          "title": "Comparable",
+          "type": "boolean"
+        },
+        "improved_targets": {
+          "default": 0,
+          "title": "Improved Targets",
+          "type": "integer"
+        },
+        "regressed_targets": {
+          "default": 0,
+          "title": "Regressed Targets",
+          "type": "integer"
+        },
+        "improved_regressions": {
+          "default": 0,
+          "title": "Improved Regressions",
+          "type": "integer"
+        },
+        "regressed_regressions": {
+          "default": 0,
+          "title": "Regressed Regressions",
+          "type": "integer"
+        },
+        "target_variation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SeedVariation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "regression_variation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SeedVariation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "groups": {
+          "items": {
+            "$ref": "#/$defs/PairedGroupSummary"
+          },
+          "title": "Groups",
+          "type": "array"
+        }
+      },
+      "required": [
+        "reference",
+        "comparable"
+      ],
+      "title": "PairedSummary",
+      "type": "object"
+    },
+    "SeedVariation": {
+      "additionalProperties": false,
+      "description": "Descriptive paired variation, never an independence or population CI claim.",
+      "properties": {
+        "seed_count": {
+          "title": "Seed Count",
+          "type": "integer"
+        },
+        "cases_per_seed": {
+          "title": "Cases Per Seed",
+          "type": "integer"
+        },
+        "paired_executions": {
+          "title": "Paired Executions",
+          "type": "integer"
+        },
+        "mean_delta": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mean Delta"
+        },
+        "sample_stddev": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sample Stddev"
+        },
+        "minimum_delta": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Minimum Delta"
+        },
+        "maximum_delta": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Maximum Delta"
+        },
+        "interpretation": {
+          "const": "descriptive_across_registered_seeds_not_population_ci",
+          "default": "descriptive_across_registered_seeds_not_population_ci",
+          "title": "Interpretation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "seed_count",
+        "cases_per_seed",
+        "paired_executions",
+        "mean_delta",
+        "sample_stddev",
+        "minimum_delta",
+        "maximum_delta"
+      ],
+      "title": "SeedVariation",
+      "type": "object"
+    },
+    "StudyGroupSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "group": {
+          "title": "Group",
+          "type": "string"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "integer"
+        },
+        "unscored": {
+          "title": "Unscored",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "group",
+        "total",
+        "passed",
+        "unscored"
+      ],
+      "title": "StudyGroupSummary",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "scorer_version": {
+      "anyOf": [
+        {
+          "const": "nrly-scorers/2",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Scorer Version"
+    },
+    "verdict": {
+      "enum": [
+        "observed_improvement",
+        "no_change",
+        "regressed",
+        "inconclusive"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    },
+    "recommendation": {
+      "default": "retain_original",
+      "enum": [
+        "retain_original",
+        "candidate_supported"
+      ],
+      "title": "Recommendation",
+      "type": "string"
+    },
+    "scope": {
+      "enum": [
+        "engineering_fixture",
+        "real_model"
+      ],
+      "title": "Scope",
+      "type": "string"
+    },
+    "arms": {
+      "items": {
+        "$ref": "#/$defs/ArmSummary"
+      },
+      "title": "Arms",
+      "type": "array"
+    },
+    "comparisons": {
+      "items": {
+        "$ref": "#/$defs/PairedSummary"
+      },
+      "title": "Comparisons",
+      "type": "array"
+    },
+    "issues": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Issues",
+      "type": "array"
+    }
+  },
+  "required": [
+    "verdict",
+    "scope"
+  ],
+  "title": "StudyAssessment",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -1,0 +1,101 @@
+{
+  "id": "7bdc874600e84667afae4d8bfdbabc3d",
+  "study_id": "80462b98676146f1a9d15c0930a5496a",
+  "sequence": 2,
+  "candidate": {
+    "name": "Unsuccessful overscale attempt",
+    "program": {
+      "target": "output.weight",
+      "factor": 3.0,
+      "values": [],
+      "shape": [],
+      "indices": [],
+      "position": "all",
+      "kind": "weight_scale",
+      "expected_base": null
+    }
+  },
+  "candidate_digest": "8a7679542c2f05f291e56a6016c9dceb84fe87fb6a90ce6419600413336418ab",
+  "status": "succeeded",
+  "created_at": "2026-11-10T08:25:41.223669+00:00",
+  "finished_at": "2026-11-10T08:25:51.566567+00:00",
+  "assessment": {
+    "verdict": "no_change",
+    "recommendation": "retain_original",
+    "scope": "engineering_fixture",
+    "arms": [
+      {
+        "arm": "baseline",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 1,
+        "target_total": 1,
+        "target_passed": 0,
+        "regression_total": 1,
+        "regression_passed": 1
+      },
+      {
+        "arm": "no_op",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 1,
+        "target_total": 1,
+        "target_passed": 0,
+        "regression_total": 1,
+        "regression_passed": 1
+      },
+      {
+        "arm": "control:unit-scale-control",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 1,
+        "target_total": 1,
+        "target_passed": 0,
+        "regression_total": 1,
+        "regression_passed": 1
+      },
+      {
+        "arm": "candidate",
+        "status": "succeeded",
+        "complete": true,
+        "total": 2,
+        "passed": 1,
+        "target_total": 1,
+        "target_passed": 0,
+        "regression_total": 1,
+        "regression_passed": 1
+      }
+    ],
+    "comparisons": [
+      {
+        "reference": "baseline",
+        "comparable": true,
+        "improved_targets": 0,
+        "regressed_targets": 0,
+        "improved_regressions": 0,
+        "regressed_regressions": 0
+      },
+      {
+        "reference": "no_op",
+        "comparable": true,
+        "improved_targets": 0,
+        "regressed_targets": 0,
+        "improved_regressions": 0,
+        "regressed_regressions": 0
+      },
+      {
+        "reference": "control:unit-scale-control",
+        "comparable": true,
+        "improved_targets": 0,
+        "regressed_targets": 0,
+        "improved_regressions": 0,
+        "regressed_regressions": 0
+      }
+    ],
+    "issues": []
+  },
+  "error_code": null
+}

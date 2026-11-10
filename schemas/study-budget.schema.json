@@ -1,0 +1,51 @@
+{
+  "additionalProperties": false,
+  "description": "Admission ceilings, charged without refunds, including unsuccessful attempts.",
+  "properties": {
+    "max_attempts": {
+      "default": 10,
+      "maximum": 1000,
+      "minimum": 1,
+      "title": "Max Attempts",
+      "type": "integer"
+    },
+    "max_runs": {
+      "default": 100,
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Max Runs",
+      "type": "integer"
+    },
+    "max_case_executions": {
+      "default": 10000,
+      "maximum": 1000000,
+      "minimum": 1,
+      "title": "Max Case Executions",
+      "type": "integer"
+    },
+    "max_output_tokens": {
+      "default": 100000,
+      "maximum": 100000000,
+      "minimum": 1,
+      "title": "Max Output Tokens",
+      "type": "integer"
+    },
+    "max_capture_bytes": {
+      "default": 100000000,
+      "maximum": 1000000000,
+      "minimum": 0,
+      "title": "Max Capture Bytes",
+      "type": "integer"
+    },
+    "max_wall_seconds": {
+      "default": 7200,
+      "exclusiveMinimum": 0,
+      "maximum": 864000,
+      "title": "Max Wall Seconds",
+      "type": "number"
+    }
+  },
+  "title": "StudyBudget",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "scope": "public engineering fixture; holdout is published and not unseen evidence",
+  "run_store": "C:\\src\\nrly\\.nrly\\wave2-cli-b0cc1fdab5ac4c5a9d3c3ac176f20ab8",
+  "study_id": "80462b98676146f1a9d15c0930a5496a",
+  "study_runs_reserved": 16,
+  "attempt_recommendations": [
+    "retain_original",
+    "retain_original",
+    "candidate_supported"
+  ],
+  "final_verdict": "observed_improvement",
+  "finalization_idempotent": true,
+  "base_restored": true,
+  "bundle_replayed": true,
+  "report": "repair-review.html",
+  "context_pack": "context-pack"
+}

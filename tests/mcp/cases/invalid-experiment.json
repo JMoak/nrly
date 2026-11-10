@@ -1,0 +1,6 @@
+{
+  "name": "empty experiment cannot become an accepted job",
+  "tool": "submit_experiment",
+  "args": { "spec": { "name": "invalid-empty", "cases": [] } },
+  "expectError": { "message": { "$regex": "cases|validation", "flags": "i" } }
+}

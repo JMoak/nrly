@@ -1,0 +1,6 @@
+{
+  "name": "inspection rejects pages beyond its bounded preview limit",
+  "tool": "get_inspection",
+  "args": { "run_id": "00000000000000000000000000000000", "value_limit": 65 },
+  "expectError": { "message": { "$regex": "bounds|limit|validation", "flags": "i" } }
+}
