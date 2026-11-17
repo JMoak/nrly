@@ -1,0 +1,223 @@
+{
+  "$defs": {
+    "ArmMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "variant": {
+          "enum": [
+            "original",
+            "patch"
+          ],
+          "title": "Variant",
+          "type": "string"
+        },
+        "rule": {
+          "enum": [
+            "fixed",
+            "fitted"
+          ],
+          "title": "Rule",
+          "type": "string"
+        },
+        "split": {
+          "enum": [
+            "fit",
+            "evaluation",
+            "challenge"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "threshold": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Threshold"
+        },
+        "cases": {
+          "title": "Cases",
+          "type": "integer"
+        },
+        "families": {
+          "title": "Families",
+          "type": "integer"
+        },
+        "scored": {
+          "title": "Scored",
+          "type": "integer"
+        },
+        "acts": {
+          "title": "Acts",
+          "type": "integer"
+        },
+        "unsupported_acts": {
+          "title": "Unsupported Acts",
+          "type": "integer"
+        },
+        "coverage": {
+          "title": "Coverage",
+          "type": "number"
+        },
+        "unsupported_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unsupported Rate"
+        },
+        "agreement": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Agreement"
+        },
+        "brier": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Brier"
+        },
+        "elapsed_ms": {
+          "title": "Elapsed Ms",
+          "type": "number"
+        }
+      },
+      "required": [
+        "variant",
+        "rule",
+        "split",
+        "threshold",
+        "cases",
+        "families",
+        "scored",
+        "acts",
+        "unsupported_acts",
+        "coverage",
+        "unsupported_rate",
+        "agreement",
+        "brier",
+        "elapsed_ms"
+      ],
+      "title": "ArmMetrics",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Safe public projection: aggregates only, no case IDs, prompts or labels.",
+  "properties": {
+    "schema_version": {
+      "const": "nrly-decision-assessment/1",
+      "default": "nrly-decision-assessment/1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "run_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Run Digest",
+      "type": "string"
+    },
+    "freeze_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Freeze Digest",
+      "type": "string"
+    },
+    "model_id": {
+      "title": "Model Id",
+      "type": "string"
+    },
+    "semantics": {
+      "enum": [
+        "native_binary_probability",
+        "causal_label_likelihood"
+      ],
+      "title": "Semantics",
+      "type": "string"
+    },
+    "label_origin": {
+      "title": "Label Origin",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "incomplete"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "recommendation": {
+      "enum": [
+        "retain_original",
+        "further_shadow_evaluation",
+        "incomplete"
+      ],
+      "title": "Recommendation",
+      "type": "string"
+    },
+    "metrics": {
+      "items": {
+        "$ref": "#/$defs/ArmMetrics"
+      },
+      "title": "Metrics",
+      "type": "array"
+    },
+    "rescued_supported_acts": {
+      "title": "Rescued Supported Acts",
+      "type": "integer"
+    },
+    "introduced_unsupported_acts": {
+      "title": "Introduced Unsupported Acts",
+      "type": "integer"
+    },
+    "lost_supported_acts": {
+      "title": "Lost Supported Acts",
+      "type": "integer"
+    },
+    "max_unsupported_rate": {
+      "title": "Max Unsupported Rate",
+      "type": "number"
+    },
+    "scope": {
+      "const": "exploratory; no promotion authorization",
+      "default": "exploratory; no promotion authorization",
+      "title": "Scope",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_digest",
+    "freeze_digest",
+    "model_id",
+    "semantics",
+    "label_origin",
+    "status",
+    "recommendation",
+    "metrics",
+    "rescued_supported_acts",
+    "introduced_unsupported_acts",
+    "lost_supported_acts",
+    "max_unsupported_rate"
+  ],
+  "title": "DecisionAssessment",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

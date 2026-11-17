@@ -20,6 +20,9 @@ from nrly.contracts import (
     WeightOperationSpec,
     WeightReadSpec,
 )
+from nrly.decision_cli import DecisionExperiment
+from nrly.decision_contracts import DecisionAssessment, DecisionProtocol, DecisionRun
+from nrly.decision_handoff import ShadowHandoff
 from nrly.deployment import PatchManifest
 from nrly.lineage import EditRevision, SequentialReport
 from nrly.study_contracts import (
@@ -33,6 +36,11 @@ from nrly.study_contracts import (
 )
 
 SCHEMAS: dict[str, type[BaseModel]] = {
+    "decision-experiment": DecisionExperiment,
+    "decision-protocol": DecisionProtocol,
+    "decision-run": DecisionRun,
+    "decision-assessment": DecisionAssessment,
+    "shadow-handoff": ShadowHandoff,
     "diagnostics": DiagnosticSpec,
     "capture": CaptureSpec,
     "task-adapter": TaskAdapterSpec,

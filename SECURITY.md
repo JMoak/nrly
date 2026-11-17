@@ -15,10 +15,15 @@ not have a separate security backport commitment.
 
 ## Trust boundaries
 
-- The provided server uses local MCP stdio and opens no listening port. It has no
+- The MCP server uses local stdio and opens no listening port. It has no
   account authentication, tenant separation, global request quota or durable-storage
   quota. Do not expose it through an HTTP bridge or shared service without adding
   those controls. Anyone with access to the MCP connection can use its available tools.
+- The optional decision shadow bridge is a separate trusted-Python context manager.
+  It opens an ephemeral port on `127.0.0.1`, requires a caller-supplied bearer token,
+  rejects browser origins, bounds request bodies, and closes on context exit. It is
+  a serial research adapter, not a production or multi-user server. Native model
+  calls have no hard timeout; do not expose it through a proxy or network tunnel.
 - Model workers execute as the launching OS user and inherit its environment and
   filesystem permissions. Process isolation, timeouts and tensor budgets are not an
   OS security sandbox, CPU/RAM/GPU memory quota, or network egress restriction.
@@ -52,9 +57,13 @@ contains study/candidate names and metadata, which may be confidential in a real
 project. Treat model text and imported context as data, not authority for tool calls.
 No context export automatically changes agent configuration or grants permissions.
 
-HTML reports escape text and use a restrictive content security policy. They do not
-load network resources or execute JavaScript. Keep full reports private when inputs
-or generated outputs are sensitive.
+HTML reports escape text and use a restrictive content security policy. Existing run
+reports execute no JavaScript. Decision reviews allow one hash-pinned inline filter
+script and contain aggregate results only; neither loads network resources. Model
+metadata can still be sensitive. Decision `run.json`, journals and input specifications
+contain private evaluation material; `shadow.json` contains the task rubric. Share the
+review intentionally, not the entire run directory. Keep full run reports private when
+inputs or generated outputs are sensitive.
 
 ## Before publishing changes
 

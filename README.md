@@ -121,6 +121,17 @@ Each attempt remains in the record. Failed, interrupted, truncated, and unscored
 
 [Controlled study walkthrough](docs/workbench-reference.md#controlled-discovery-studies) · [Scoring and comparison rules](docs/evaluation.md) · [Current workflows](docs/wave3.md)
 
+## Review a decision repair
+
+The new [decision pilot](docs/decision-pilot.md) compares original and edited weights with
+both fixed and separately fitted acceptance thresholds. It produces an interactive offline
+review of coverage, unsupported decisions, and regressions, plus a shadow-only SystemOne
+handoff for Ratchet. The first real Qwen run verified execution and interoperability and
+recommended **retaining the original**; no useful capability gain is claimed.
+
+This initial workflow is available through Python and `nrly decision`; it does not add MCP
+tools or change existing study contracts. See the [recorded acceptance](docs/validation/decision-pilot/README.md).
+
 ## Connect your tools
 
 ```text

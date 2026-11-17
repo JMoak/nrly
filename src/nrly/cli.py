@@ -54,12 +54,14 @@ def emit(value: Any) -> None:
 
 def parser() -> argparse.ArgumentParser:
     from nrly.artifact_cli import register_artifact_commands
+    from nrly.decision_cli import register_decision_commands
 
     result = argparse.ArgumentParser(description="nrly — weight-space programming workbench")
     result.add_argument("--root", type=Path, default=Path(".nrly"), help="local run store")
     result.add_argument("--model-cache", type=Path, help="Hugging Face cache root (HF_HOME)")
     commands = result.add_subparsers(dest="command", required=True)
     register_artifact_commands(commands)
+    register_decision_commands(commands)
     run = commands.add_parser("run", help="execute a JSON experiment specification")
     run.add_argument("spec", type=Path)
     run.add_argument("--request-id")
@@ -114,6 +116,11 @@ def parser() -> argparse.ArgumentParser:
             "comparator",
             "edit-revision",
             "patch",
+            "decision-experiment",
+            "decision-protocol",
+            "decision-run",
+            "decision-assessment",
+            "shadow-handoff",
         ],
         default="experiment",
         nargs="?",
@@ -171,6 +178,16 @@ def parser() -> argparse.ArgumentParser:
 
 
 def execute(args: argparse.Namespace) -> int:
+    if args.command == "decision":
+        from nrly.decision_cli import execute_decision_command
+
+        value = execute_decision_command(args)
+        emit(value)
+        assessment = value["assessment"]
+        return int(
+            args.decision_action == "run" and isinstance(assessment, dict)
+            and assessment.get("status") == "incomplete"
+        )
     if args.command in {"patch", "edit"}:
         from nrly.artifact_cli import execute_artifact_command
 
@@ -199,11 +216,19 @@ def execute(args: argparse.Namespace) -> int:
         return execute_study(args)
     if args.command == "schema":
         from nrly.contracts import DiagnosticSpec, TaskAdapterSpec
+        from nrly.decision_cli import DecisionExperiment
+        from nrly.decision_contracts import DecisionAssessment, DecisionProtocol, DecisionRun
+        from nrly.decision_handoff import ShadowHandoff
         from nrly.deployment import PatchManifest
         from nrly.lineage import EditRevision
         from nrly.study_contracts import ComparatorSpec
 
         models: dict[str, type[BaseModel]] = {
+            "decision-experiment": DecisionExperiment,
+            "decision-protocol": DecisionProtocol,
+            "decision-run": DecisionRun,
+            "decision-assessment": DecisionAssessment,
+            "shadow-handoff": ShadowHandoff,
             "diagnostics": DiagnosticSpec,
             "task-adapter": TaskAdapterSpec,
             "comparator": ComparatorSpec,

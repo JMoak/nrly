@@ -1,0 +1,149 @@
+{
+  "$defs": {
+    "DecisionCase": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "family": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Family",
+          "type": "string"
+        },
+        "split": {
+          "enum": [
+            "fit",
+            "evaluation",
+            "challenge"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "state": {
+          "maxLength": 16000,
+          "minLength": 1,
+          "title": "State",
+          "type": "string"
+        },
+        "truth": {
+          "title": "Truth",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "family",
+        "split",
+        "state",
+        "truth"
+      ],
+      "title": "DecisionCase",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "nrly-decision-protocol/1",
+      "default": "nrly-decision-protocol/1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "question": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Question",
+      "type": "string"
+    },
+    "label_origin": {
+      "enum": [
+        "synthetic",
+        "assistant_authored",
+        "independently_reviewed"
+      ],
+      "title": "Label Origin",
+      "type": "string"
+    },
+    "evaluation_scope": {
+      "const": "exploratory",
+      "default": "exploratory",
+      "title": "Evaluation Scope",
+      "type": "string"
+    },
+    "fixed_threshold": {
+      "default": 0.5,
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Fixed Threshold",
+      "type": "number"
+    },
+    "threshold_grid": {
+      "default": [
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        0.95,
+        0.99
+      ],
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 101,
+      "minItems": 1,
+      "title": "Threshold Grid",
+      "type": "array"
+    },
+    "max_unsupported_rate": {
+      "default": 0.05,
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Max Unsupported Rate",
+      "type": "number"
+    },
+    "min_fit_acts": {
+      "default": 2,
+      "maximum": 1000,
+      "minimum": 1,
+      "title": "Min Fit Acts",
+      "type": "integer"
+    },
+    "min_fit_families": {
+      "default": 2,
+      "maximum": 1000,
+      "minimum": 2,
+      "title": "Min Fit Families",
+      "type": "integer"
+    },
+    "max_elapsed_seconds": {
+      "default": 600,
+      "exclusiveMinimum": 0,
+      "maximum": 3600,
+      "title": "Max Elapsed Seconds",
+      "type": "number"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/DecisionCase"
+      },
+      "maxItems": 1000,
+      "minItems": 4,
+      "title": "Cases",
+      "type": "array"
+    }
+  },
+  "required": [
+    "question",
+    "label_origin",
+    "cases"
+  ],
+  "title": "DecisionProtocol",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

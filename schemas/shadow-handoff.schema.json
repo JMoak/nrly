@@ -1,0 +1,130 @@
+{
+  "$defs": {
+    "FrozenRule": {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "empirical-coverage-grid/1",
+          "default": "empirical-coverage-grid/1",
+          "title": "Method",
+          "type": "string"
+        },
+        "threshold": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Threshold"
+        },
+        "fit_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Fit Digest",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fit_digest"
+      ],
+      "title": "FrozenRule",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "nrly-shadow/1",
+      "default": "nrly-shadow/1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "mode": {
+      "const": "shadow",
+      "default": "shadow",
+      "title": "Mode",
+      "type": "string"
+    },
+    "promotion_authorized": {
+      "const": false,
+      "default": false,
+      "title": "Promotion Authorized",
+      "type": "boolean"
+    },
+    "protocol": {
+      "const": "systemone-binary/1",
+      "default": "systemone-binary/1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "integration_status": {
+      "const": "prepared_unverified",
+      "default": "prepared_unverified",
+      "title": "Integration Status",
+      "type": "string"
+    },
+    "run_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Run Digest",
+      "type": "string"
+    },
+    "freeze_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Freeze Digest",
+      "type": "string"
+    },
+    "served_model": {
+      "title": "Served Model",
+      "type": "string"
+    },
+    "semantics": {
+      "enum": [
+        "native_binary_probability",
+        "causal_label_likelihood"
+      ],
+      "title": "Semantics",
+      "type": "string"
+    },
+    "question": {
+      "title": "Question",
+      "type": "string"
+    },
+    "rule": {
+      "$ref": "#/$defs/FrozenRule"
+    },
+    "threshold_owner": {
+      "const": "consumer; server returns raw probabilities",
+      "default": "consumer; server returns raw probabilities",
+      "title": "Threshold Owner",
+      "type": "string"
+    },
+    "api_price_per_million_input": {
+      "const": 0,
+      "default": 0,
+      "title": "Api Price Per Million Input",
+      "type": "integer"
+    },
+    "cost_scope": {
+      "const": "no API billing; hardware and energy costs unmeasured",
+      "default": "no API billing; hardware and energy costs unmeasured",
+      "title": "Cost Scope",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_digest",
+    "freeze_digest",
+    "served_model",
+    "semantics",
+    "question",
+    "rule"
+  ],
+  "title": "ShadowHandoff",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
