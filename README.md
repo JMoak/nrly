@@ -37,6 +37,7 @@ The ambition is a shared experimental language for weight-space programming. Tod
 | **What did my edit change?** | Recorded parameter deltas, selected activation captures, and continuation token probabilities. |
 | **Does it beat a simpler intervention?** | Registered prompt or checkpoint comparators, paired seeds, and target/regression summaries. |
 | **Did the next repair undo the first?** | Immutable edit ancestry and original → A → A+B comparisons. |
+| **Which sites in this checkpoint have been tested?** | A local lever map: pencil until a registered held-out study inks or strikes it. |
 | **Can someone reproduce this?** | Exact model/runtime fingerprints, checksummed bundles, fresh execution, and portable patch programs. |
 
 ## First contact
@@ -120,6 +121,25 @@ Each attempt remains in the record. Failed, interrupted, truncated, and unscored
 - **Share:** export the program, specification, results, and integrity manifest. Model weights are referenced, not bundled.
 
 [Controlled study walkthrough](docs/workbench-reference.md#controlled-discovery-studies) · [Scoring and comparison rules](docs/evaluation.md) · [Current workflows](docs/wave3.md)
+
+## Map the levers
+
+A **lever** is a tested place in one exact checkpoint's weights: a site, a direction found
+by a re-runnable recipe, a dose-response dial, and a verdict. `nrly lever` derives the
+direction, measures it across strengths, and referees the nominated edit on held-out
+cases against matched controls and cheaper alternatives such as a prompt change.
+
+Entries are named by their test and tensor, never by a meaning. Everything starts in
+**pencil**. Only a registered study with an inference rule and a matched control can
+**ink** an entry, and a refuted entry stays on the map, **struck**. Entries pin weights
+rather than a machine, so they can be exported and re-refereed elsewhere. Legends reuse
+existing public feature dictionaries instead of training new ones, and are always pencil.
+
+The first real-model entries are struck. On Qwen3-0.6B, a derived direction for
+reply-only compliance did not beat its controls on held-out cases, while a one-line
+stricter prompt did far better. That is the referee working, not a model repair.
+
+[Lever guide](docs/levers.md) · [Recorded acceptance](docs/validation/lever-qwen/README.md)
 
 ## Review a decision repair
 
