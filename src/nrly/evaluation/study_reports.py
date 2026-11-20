@@ -1,23 +1,43 @@
-"""Conservative preregistered paired studies, with descriptive seed variation."""
+"""Conservative preregistered paired studies, with descriptive seed variation.
+
+A study that registers an ``InferenceRule`` is adjudicated by paired inference over
+cases; every other study keeps the count-based rule.
+"""
 
 from __future__ import annotations
 
 from statistics import mean, stdev
+from typing import Literal
 
 from nrly.contracts import ModelIdentity, RunRecord, digest
-from nrly.evaluation.reports import SCORER_VERSION, CaseEvaluation, EvaluationReport, evaluate_run
+from nrly.evaluation.reports import (
+    SCORER_VERSION,
+    TRUNCATION_SCORER_VERSION,
+    CaseEvaluation,
+    EvaluationReport,
+    evaluate_run,
+)
+from nrly.evaluation.statistics import inferential_verdict, paired_inference
 from nrly.study_contracts import (
     ArmSummary,
     PairedGroupSummary,
+    PairedInference,
     PairedSummary,
     SeedVariation,
     StudyAssessment,
     StudyGroupSummary,
     StudySpec,
+    has_inference_cases,
+    study_arm_generation,
     study_arm_name,
     study_arm_names,
     study_seeds,
 )
+
+
+def study_scorer_version(spec: StudySpec) -> Literal["nrly-scorers/2", "nrly-scorers/3"]:
+    """Scorer policy stamped on every assessment of a study, including unfinished ones."""
+    return TRUNCATION_SCORER_VERSION if spec.truncation == "fail" else SCORER_VERSION
 
 
 def _variation(deltas: list[list[float]]) -> SeedVariation:
@@ -45,14 +65,15 @@ def assess_study_arms(spec: StudySpec, arms: list[tuple[str, RunRecord]]) -> Stu
     """No outputs or case identifiers escape; seed repeats are not independent cases."""
     summaries: list[ArmSummary] = []
     comparisons: list[PairedSummary] = []
+    inference: list[PairedInference] = []
     issues: list[str] = []
-    names, seeds = study_arm_names(spec), study_seeds(spec)
+    names, seeds, rule = study_arm_names(spec), study_seeds(spec), spec.inference
     expected = [study_arm_name(spec, name, seed) for seed in seeds for name in names]
     if [name for name, _run in arms] != expected:
         issues.append("the preregistered arm sequence did not complete")
     reports: dict[str, EvaluationReport] = {}
     for arm, run in arms:
-        report = evaluate_run(run)
+        report = evaluate_run(run, spec.truncation)
         reports[arm] = report
         summaries.append(
             ArmSummary(
@@ -65,13 +86,15 @@ def assess_study_arms(spec: StudySpec, arms: list[tuple[str, RunRecord]]) -> Stu
                 target_passed=report.targets.passed,
                 regression_total=report.regressions.total,
                 regression_passed=report.regressions.passed,
-                seed=run.spec.generation.seed if spec.schema_version == "0.2" else None,
+                seed=run.spec.generation.seed if spec.schema_version != "0.1" else None,
                 groups=[
                     StudyGroupSummary(
                         group=group, total=value.total, passed=value.passed, unscored=value.unscored
                     )
                     for group, value in report.groups.items()
                 ],
+                finished=report.summary.finished,
+                finished_passed=report.summary.finished_passed,
             )
         )
         if not report.complete:
@@ -81,6 +104,11 @@ def assess_study_arms(spec: StudySpec, arms: list[tuple[str, RunRecord]]) -> Stu
         runs = dict(arms)
         first = runs[study_arm_name(spec, "baseline", seeds[0])]
         base_cases = first.spec.cases
+        # Admission refuses this; an underpowered case set must not read as "no_change".
+        if rule is not None and not has_inference_cases(base_cases):
+            issues.append(
+                "registered inference requires at least six target and six regression cases"
+            )
         identities: dict[str, ModelIdentity | None] = {}
         candidate_program = runs[study_arm_name(spec, "candidate", seeds[0])].spec.program
         comparators = {"comparator:" + c.name: c for c in spec.comparators}
@@ -97,7 +125,7 @@ def assess_study_arms(spec: StudySpec, arms: list[tuple[str, RunRecord]]) -> Stu
                     continue
                 if run.spec.model != model or run.spec.cases != cases:
                     issues.append("arm model or ordered cases differ from the registered design")
-                if run.spec.generation != spec.generation.model_copy(update={"seed": seed}):
+                if run.spec.generation != study_arm_generation(spec, name, seed):
                     issues.append("arm generation differs from its registered seed block")
                 model_key = digest(model)
                 if model_key in identities and identities[model_key] != run.model_identity:
@@ -168,10 +196,10 @@ def assess_study_arms(spec: StudySpec, arms: list[tuple[str, RunRecord]]) -> Stu
                         improved_regressions=sum(delta > 0 for delta in regression_flat),
                         regressed_regressions=sum(delta < 0 for delta in regression_flat),
                         target_variation=_variation(target_deltas)
-                        if spec.schema_version == "0.2"
+                        if spec.schema_version != "0.1"
                         else None,
                         regression_variation=_variation(regression_deltas)
-                        if spec.schema_version == "0.2"
+                        if spec.schema_version != "0.1"
                         else None,
                         groups=[
                             PairedGroupSummary(
@@ -185,8 +213,17 @@ def assess_study_arms(spec: StudySpec, arms: list[tuple[str, RunRecord]]) -> Stu
                         ],
                     )
                 )
+                if rule is not None:
+                    inference.append(
+                        paired_inference(reference, target_deltas, regression_deltas, rule)
+                    )
             base = comparisons[0]
-            if base.regressed_targets or base.regressed_regressions:
+            if rule is not None:
+                # The registered rule replaces the counts below; they stay descriptive.
+                verdict, unsupported = inferential_verdict(inference)
+                if unsupported is not None:
+                    issues.append(unsupported)
+            elif base.regressed_targets or base.regressed_regressions:
                 verdict = "regressed"
             elif not base.improved_targets and not base.improved_regressions:
                 verdict = "no_change"
@@ -199,7 +236,7 @@ def assess_study_arms(spec: StudySpec, arms: list[tuple[str, RunRecord]]) -> Stu
                 issues.append("candidate did not improve targets beyond every registered control")
     return StudyAssessment.model_validate(
         {
-            "scorer_version": SCORER_VERSION,
+            "scorer_version": study_scorer_version(spec),
             "verdict": verdict,
             "recommendation": "candidate_supported"
             if verdict == "observed_improvement"
@@ -208,5 +245,6 @@ def assess_study_arms(spec: StudySpec, arms: list[tuple[str, RunRecord]]) -> Stu
             "arms": summaries,
             "comparisons": comparisons,
             "issues": list(dict.fromkeys(issues)),
+            "inference": inference,
         }
     )

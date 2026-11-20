@@ -6,10 +6,16 @@ import argparse
 from pathlib import Path
 from typing import Any
 
-from nrly.contracts import ExperimentSpec, NrlyError, ProgramSpec
-from nrly.deployment import export_patch, read_patch
+from nrly.contracts import ExperimentSpec, NrlyError, PortableBase, ProgramSpec
+from nrly.deployment import (
+    PortablePatchManifest,
+    bind_operations,
+    export_patch,
+    export_portable_patch,
+    read_any_patch,
+)
 from nrly.evaluation import evaluate_run
-from nrly.lineage import EditStore, compare_sequential, conflict_footprint
+from nrly.lineage import EditStore, compare_sequential, conflict_footprint, weight_operations
 from nrly.runner import Runner
 from nrly.store import Store
 
@@ -22,6 +28,10 @@ def register_artifact_commands(commands: Any) -> None:
     )
     export.add_argument("run_id")
     export.add_argument("destination", type=Path)
+    export.add_argument(
+        "--portable", action="store_true",
+        help="pin the base weights instead of this machine's runtime fingerprint",
+    )
     inspect = actions.add_parser("inspect", help="verify a patch without loading a model")
     inspect.add_argument("package", type=Path)
     run = actions.add_parser("run", help="run an experiment using a verified patch program")
@@ -81,11 +91,19 @@ def execute_artifact_command(args: argparse.Namespace) -> tuple[Any, int]:
             raise NrlyError("lineage_mismatch", "measured run must execute the exported revision")
         return export_patch(args.destination, revision.program, run.model_identity, revision), 0
     if args.patch_command == "inspect":
-        return read_patch(args.package), 0
+        return read_any_patch(args.package), 0
     if args.patch_command == "export":
         run = Store(args.root).get(args.run_id)
         if run.status != "succeeded" or run.model_identity is None or not run.samples:
             raise NrlyError("incomplete_run", "patch export requires a completed inference run")
+        if args.portable:
+            operations = weight_operations(run.spec.program)
+            if not operations:
+                raise NrlyError(
+                    "invalid_program", "a portable patch requires executed weight operations"
+                )
+            base = PortableBase.from_identity(run.model_identity)
+            return export_portable_patch(args.destination, operations, base), 0
         program = ProgramSpec.model_validate(
             {
                 **run.spec.program.model_dump(),
@@ -93,10 +111,12 @@ def execute_artifact_command(args: argparse.Namespace) -> tuple[Any, int]:
             }
         )
         return export_patch(args.destination, program, run.model_identity), 0
-    manifest = read_patch(args.package)
+    manifest = read_any_patch(args.package)
     spec = ExperimentSpec.model_validate_json(args.spec.read_bytes())
     if spec.purpose != "experiment":
         raise NrlyError("invalid_request", "patch execution requires an inference experiment")
+    if isinstance(manifest, PortablePatchManifest):
+        return _run_portable(args, manifest, spec)
     if (
         spec.model.backend != manifest.identity.backend
         or spec.model.model_id != manifest.identity.model_id
@@ -113,6 +133,52 @@ def execute_artifact_command(args: argparse.Namespace) -> tuple[Any, int]:
         run = runner.wait(runner.submit(spec, args.request_id).id)
     return {
         "patch_id": manifest.id,
+        "run": run.model_dump(mode="json"),
+        "evaluation": evaluate_run(run).model_dump(mode="json"),
+    }, 0 if run.status == "succeeded" else 1
+
+
+def _run_portable(
+    args: argparse.Namespace, manifest: PortablePatchManifest, spec: ExperimentSpec,
+) -> tuple[Any, int]:
+    """Bind a portable patch to this runtime, then run it as an ordinary pinned program.
+
+    The package names weights, not a machine, so the local fingerprint is learned from
+    an inspection of the experiment's own model. The experiment is submitted only after
+    that recorded identity matches the package base.
+    """
+    base = manifest.base
+    if (spec.model.backend, spec.model.model_id, spec.model.revision) != (
+        base.backend, base.model_id, base.revision,
+    ):
+        raise NrlyError("base_mismatch", "experiment model differs from the patch model")
+    with Runner(args.root, args.model_cache) as runner:
+        # The experiment's budget also bounds this load of the same model.
+        inspection = runner.wait(
+            runner.submit(
+                ExperimentSpec(
+                    name=f"Local identity for patch {manifest.id[:12]}",
+                    purpose="inspection", model=spec.model, budget=spec.budget,
+                )
+            ).id
+        )
+        identity = inspection.model_identity
+        if inspection.status != "succeeded" or identity is None:
+            failure = inspection.error
+            raise NrlyError(
+                failure.code if failure else "incomplete_run",
+                f"inspection run {inspection.id} did not establish the local model identity"
+                + (f": {failure.message}" if failure else ""),
+            )
+        program = bind_operations(manifest.operations, base, identity)
+        bound = ExperimentSpec.model_validate(
+            {**spec.model_dump(), "program": program.model_dump()}
+        )
+        run = runner.wait(runner.submit(bound, args.request_id).id)
+    return {
+        "patch_id": manifest.id,
+        "bound_fingerprint": identity.fingerprint,
+        "inspection_run": inspection.id,
         "run": run.model_dump(mode="json"),
         "evaluation": evaluate_run(run).model_dump(mode="json"),
     }, 0 if run.status == "succeeded" else 1

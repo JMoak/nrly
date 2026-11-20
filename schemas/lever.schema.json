@@ -1,0 +1,2112 @@
+{
+  "$defs": {
+    "ArmSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "arm": {
+          "title": "Arm",
+          "type": "string"
+        },
+        "status": {
+          "title": "Status",
+          "type": "string"
+        },
+        "complete": {
+          "title": "Complete",
+          "type": "boolean"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "integer"
+        },
+        "target_total": {
+          "title": "Target Total",
+          "type": "integer"
+        },
+        "target_passed": {
+          "title": "Target Passed",
+          "type": "integer"
+        },
+        "regression_total": {
+          "title": "Regression Total",
+          "type": "integer"
+        },
+        "regression_passed": {
+          "title": "Regression Passed",
+          "type": "integer"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Seed"
+        },
+        "groups": {
+          "items": {
+            "$ref": "#/$defs/StudyGroupSummary"
+          },
+          "title": "Groups",
+          "type": "array"
+        },
+        "finished": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished"
+        },
+        "finished_passed": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished Passed"
+        }
+      },
+      "required": [
+        "arm",
+        "status",
+        "complete",
+        "total",
+        "passed",
+        "target_total",
+        "target_passed",
+        "regression_total",
+        "regression_passed"
+      ],
+      "title": "ArmSummary",
+      "type": "object"
+    },
+    "AtlasSource": {
+      "additionalProperties": false,
+      "description": "An inherited feature dictionary, pinned to exact bytes. nrly never retrains these.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "transcoder",
+            "sae"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "repo_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Repo Id",
+          "type": "string"
+        },
+        "revision": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Revision",
+          "type": "string"
+        },
+        "filename": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Filename",
+          "type": "string"
+        },
+        "tensor": {
+          "default": "W_dec",
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Tensor",
+          "type": "string"
+        },
+        "tensor_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Tensor Sha256",
+          "type": "string"
+        },
+        "license": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "License",
+          "type": "string"
+        },
+        "layer": {
+          "maximum": 4095,
+          "minimum": 0,
+          "title": "Layer",
+          "type": "integer"
+        },
+        "writes": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Writes",
+          "type": "string"
+        },
+        "latents": {
+          "minimum": 1,
+          "title": "Latents",
+          "type": "integer"
+        },
+        "width": {
+          "minimum": 1,
+          "title": "Width",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "repo_id",
+        "revision",
+        "filename",
+        "tensor_sha256",
+        "license",
+        "layer",
+        "writes",
+        "latents",
+        "width"
+      ],
+      "title": "AtlasSource",
+      "type": "object"
+    },
+    "CaseSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "input": {
+          "anyOf": [
+            {
+              "maxLength": 100000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected"
+        },
+        "scorer": {
+          "default": "exact",
+          "enum": [
+            "exact",
+            "numeric",
+            "final_number"
+          ],
+          "title": "Scorer",
+          "type": "string"
+        },
+        "tolerance": {
+          "default": 1e-06,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Tolerance",
+          "type": "number"
+        },
+        "split": {
+          "default": "discovery",
+          "enum": [
+            "discovery",
+            "validation",
+            "test"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "role": {
+          "default": "target",
+          "enum": [
+            "target",
+            "regression"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "messages": {
+          "items": {
+            "$ref": "#/$defs/ChatMessage"
+          },
+          "maxItems": 128,
+          "title": "Messages",
+          "type": "array"
+        },
+        "continuation": {
+          "anyOf": [
+            {
+              "maxLength": 100000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Continuation"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group"
+        },
+        "adapter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaskAdapterSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "CaseSpec",
+      "type": "object"
+    },
+    "ChatMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "system",
+            "user",
+            "assistant"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "content": {
+          "maxLength": 100000,
+          "minLength": 1,
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "ChatMessage",
+      "type": "object"
+    },
+    "Contraindication": {
+      "additionalProperties": false,
+      "description": "A build of the same model where the lever was tried and did not hold.",
+      "properties": {
+        "variant": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Variant",
+          "type": "string"
+        },
+        "note": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Note",
+          "type": "string"
+        },
+        "base": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PortableBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "evidence_digest": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence Digest"
+        }
+      },
+      "required": [
+        "variant",
+        "note"
+      ],
+      "title": "Contraindication",
+      "type": "object"
+    },
+    "Derivation": {
+      "additionalProperties": false,
+      "description": "One execution of a recipe on one exact checkpoint, including the sites not chosen.",
+      "properties": {
+        "schema_version": {
+          "const": "nrly-derivation/1",
+          "default": "nrly-derivation/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "recipe": {
+          "$ref": "#/$defs/RecipeSpec"
+        },
+        "recipe_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Recipe Digest",
+          "type": "string"
+        },
+        "base": {
+          "$ref": "#/$defs/PortableBase"
+        },
+        "runtime_fingerprint": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runtime Fingerprint",
+          "type": "string"
+        },
+        "chosen": {
+          "$ref": "#/$defs/LeverSite"
+        },
+        "direction": {
+          "$ref": "#/$defs/TensorArtifact"
+        },
+        "scores": {
+          "items": {
+            "$ref": "#/$defs/SiteScore"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Scores",
+          "type": "array"
+        }
+      },
+      "required": [
+        "recipe",
+        "recipe_digest",
+        "base",
+        "runtime_fingerprint",
+        "chosen",
+        "direction",
+        "scores"
+      ],
+      "title": "Derivation",
+      "type": "object"
+    },
+    "Dial": {
+      "additionalProperties": false,
+      "description": "Dose-response on development cases. Exploratory: it selects, it never proves.",
+      "properties": {
+        "schema_version": {
+          "const": "nrly-dial/1",
+          "default": "nrly-dial/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "evidence": {
+          "const": "exploratory_development",
+          "default": "exploratory_development",
+          "title": "Evidence",
+          "type": "string"
+        },
+        "rule": {
+          "$ref": "#/$defs/InferenceRule"
+        },
+        "truncation": {
+          "default": "unscored",
+          "enum": [
+            "unscored",
+            "fail"
+          ],
+          "title": "Truncation",
+          "type": "string"
+        },
+        "generation": {
+          "$ref": "#/$defs/GenerationSpec"
+        },
+        "seeds": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Seeds",
+          "type": "array"
+        },
+        "cases": {
+          "minimum": 1,
+          "title": "Cases",
+          "type": "integer"
+        },
+        "runtime_fingerprint": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runtime Fingerprint",
+          "type": "string"
+        },
+        "baseline_target_rate": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Baseline Target Rate",
+          "type": "number"
+        },
+        "baseline_regression_rate": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Baseline Regression Rate",
+          "type": "number"
+        },
+        "baseline_finish_rate": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Baseline Finish Rate"
+        },
+        "points": {
+          "items": {
+            "$ref": "#/$defs/DosePoint"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Points",
+          "type": "array"
+        },
+        "window": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StrengthWindow"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "nominated": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Nominated"
+        }
+      },
+      "required": [
+        "rule",
+        "generation",
+        "seeds",
+        "cases",
+        "runtime_fingerprint",
+        "baseline_target_rate",
+        "baseline_regression_rate",
+        "points"
+      ],
+      "title": "Dial",
+      "type": "object"
+    },
+    "DosePoint": {
+      "additionalProperties": false,
+      "description": "One tested strength, compared with the unedited original on development cases.",
+      "properties": {
+        "strength": {
+          "maximum": 16,
+          "minimum": -16,
+          "title": "Strength",
+          "type": "number"
+        },
+        "operations_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Operations Digest",
+          "type": "string"
+        },
+        "inference": {
+          "$ref": "#/$defs/PairedInference"
+        },
+        "target_rate": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Target Rate",
+          "type": "number"
+        },
+        "regression_rate": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Regression Rate",
+          "type": "number"
+        },
+        "finish_rate": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finish Rate"
+        },
+        "accuracy_when_finished": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Accuracy When Finished"
+        },
+        "selectivity": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Selectivity"
+        }
+      },
+      "required": [
+        "strength",
+        "operations_digest",
+        "inference",
+        "target_rate",
+        "regression_rate"
+      ],
+      "title": "DosePoint",
+      "type": "object"
+    },
+    "EffectEstimate": {
+      "additionalProperties": false,
+      "description": "Candidate minus reference on one role's cases; positive favours the candidate.",
+      "properties": {
+        "cases": {
+          "minimum": 1,
+          "title": "Cases",
+          "type": "integer"
+        },
+        "seeds": {
+          "minimum": 1,
+          "title": "Seeds",
+          "type": "integer"
+        },
+        "mean_difference": {
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Mean Difference",
+          "type": "number"
+        },
+        "ci_low": {
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Ci Low",
+          "type": "number"
+        },
+        "ci_high": {
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Ci High",
+          "type": "number"
+        },
+        "confidence": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "improved_cases": {
+          "minimum": 0,
+          "title": "Improved Cases",
+          "type": "integer"
+        },
+        "regressed_cases": {
+          "minimum": 0,
+          "title": "Regressed Cases",
+          "type": "integer"
+        },
+        "tied_cases": {
+          "minimum": 0,
+          "title": "Tied Cases",
+          "type": "integer"
+        },
+        "sign_test_p": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Sign Test P",
+          "type": "number"
+        },
+        "method": {
+          "const": "case_percentile_bootstrap+exact_sign_test",
+          "default": "case_percentile_bootstrap+exact_sign_test",
+          "title": "Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cases",
+        "seeds",
+        "mean_difference",
+        "ci_low",
+        "ci_high",
+        "confidence",
+        "improved_cases",
+        "regressed_cases",
+        "tied_cases",
+        "sign_test_p"
+      ],
+      "title": "EffectEstimate",
+      "type": "object"
+    },
+    "GenerationSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "max_new_tokens": {
+          "default": 32,
+          "maximum": 32768,
+          "minimum": 1,
+          "title": "Max New Tokens",
+          "type": "integer"
+        },
+        "temperature": {
+          "default": 0.0,
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "seed": {
+          "default": 0,
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "enable_thinking": {
+          "default": false,
+          "title": "Enable Thinking",
+          "type": "boolean"
+        },
+        "top_p": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 1,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top P"
+        },
+        "top_k": {
+          "anyOf": [
+            {
+              "maximum": 1000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top K"
+        },
+        "min_new_tokens": {
+          "anyOf": [
+            {
+              "maximum": 32768,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min New Tokens"
+        },
+        "repetition_penalty": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 10,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Repetition Penalty"
+        }
+      },
+      "title": "GenerationSpec",
+      "type": "object"
+    },
+    "HoldoutCommitment": {
+      "additionalProperties": false,
+      "properties": {
+        "digest": {
+          "title": "Digest",
+          "type": "string"
+        },
+        "count": {
+          "title": "Count",
+          "type": "integer"
+        },
+        "targets": {
+          "title": "Targets",
+          "type": "integer"
+        },
+        "regressions": {
+          "title": "Regressions",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "digest",
+        "count",
+        "targets",
+        "regressions"
+      ],
+      "title": "HoldoutCommitment",
+      "type": "object"
+    },
+    "InferenceRule": {
+      "additionalProperties": false,
+      "description": "Preregistered paired inference; cases are the independent unit, seeds are nested.\n\nEach case contributes its mean paired score difference across the registered seeds.\nThe interval is a percentile bootstrap over cases at confidence ``1 - alpha``; the\np-value is an exact two-sided sign test on the nonzero case differences. A candidate\nis supported only when its target effect is superior to the original AND to every\nregistered control and comparator (an intersection-union test, so the joint claim\nkeeps level ``alpha``), and its regression-case effect against the original is\nnon-inferior within ``regression_margin``. Fewer than six cases per role cannot reach\nsignificance and are refused at admission.",
+      "properties": {
+        "schema_version": {
+          "const": "nrly-inference/1",
+          "default": "nrly-inference/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "alpha": {
+          "default": 0.05,
+          "exclusiveMinimum": 0,
+          "maximum": 0.2,
+          "title": "Alpha",
+          "type": "number"
+        },
+        "regression_margin": {
+          "default": 0.02,
+          "maximum": 0.5,
+          "minimum": 0,
+          "title": "Regression Margin",
+          "type": "number"
+        },
+        "resamples": {
+          "default": 10000,
+          "maximum": 100000,
+          "minimum": 1000,
+          "title": "Resamples",
+          "type": "integer"
+        },
+        "bootstrap_seed": {
+          "default": 0,
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Bootstrap Seed",
+          "type": "integer"
+        }
+      },
+      "title": "InferenceRule",
+      "type": "object"
+    },
+    "Legend": {
+      "additionalProperties": false,
+      "description": "Atlas features nearest a lever's direction. Always pencil: names are hypotheses.",
+      "properties": {
+        "schema_version": {
+          "const": "nrly-legend/1",
+          "default": "nrly-legend/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "const": "pencil",
+          "default": "pencil",
+          "title": "Status",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/AtlasSource"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/LegendEntry"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Entries",
+          "type": "array"
+        },
+        "explained": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Explained",
+          "type": "number"
+        },
+        "method": {
+          "const": "cosine_top_k+least_squares_span",
+          "default": "cosine_top_k+least_squares_span",
+          "title": "Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "entries",
+        "explained"
+      ],
+      "title": "Legend",
+      "type": "object"
+    },
+    "LegendEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "minimum": 0,
+          "title": "Index",
+          "type": "integer"
+        },
+        "cosine": {
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Cosine",
+          "type": "number"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        },
+        "label_source": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label Source"
+        }
+      },
+      "required": [
+        "index",
+        "cosine"
+      ],
+      "title": "LegendEntry",
+      "type": "object"
+    },
+    "LeverSite": {
+      "additionalProperties": false,
+      "description": "One edited tensor and the module whose activation carries the direction.",
+      "properties": {
+        "parameter": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Parameter",
+          "type": "string"
+        },
+        "module": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Module",
+          "type": "string"
+        },
+        "side": {
+          "default": "output",
+          "enum": [
+            "output",
+            "input"
+          ],
+          "title": "Side",
+          "type": "string"
+        },
+        "layer": {
+          "anyOf": [
+            {
+              "maximum": 4095,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Layer"
+        }
+      },
+      "required": [
+        "parameter",
+        "module"
+      ],
+      "title": "LeverSite",
+      "type": "object"
+    },
+    "PairedGroupSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "group": {
+          "title": "Group",
+          "type": "string"
+        },
+        "improved": {
+          "title": "Improved",
+          "type": "integer"
+        },
+        "regressed": {
+          "title": "Regressed",
+          "type": "integer"
+        },
+        "unchanged": {
+          "title": "Unchanged",
+          "type": "integer"
+        },
+        "variation": {
+          "$ref": "#/$defs/SeedVariation"
+        }
+      },
+      "required": [
+        "group",
+        "improved",
+        "regressed",
+        "unchanged",
+        "variation"
+      ],
+      "title": "PairedGroupSummary",
+      "type": "object"
+    },
+    "PairedInference": {
+      "additionalProperties": false,
+      "description": "One registered reference arm against the candidate under an InferenceRule.",
+      "properties": {
+        "reference": {
+          "title": "Reference",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/EffectEstimate"
+        },
+        "regression": {
+          "$ref": "#/$defs/EffectEstimate"
+        },
+        "target_superior": {
+          "title": "Target Superior",
+          "type": "boolean"
+        },
+        "target_harmed": {
+          "title": "Target Harmed",
+          "type": "boolean"
+        },
+        "regression_non_inferior": {
+          "title": "Regression Non Inferior",
+          "type": "boolean"
+        },
+        "regression_inferior": {
+          "title": "Regression Inferior",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "reference",
+        "target",
+        "regression",
+        "target_superior",
+        "target_harmed",
+        "regression_non_inferior",
+        "regression_inferior"
+      ],
+      "title": "PairedInference",
+      "type": "object"
+    },
+    "PairedSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "reference": {
+          "title": "Reference",
+          "type": "string"
+        },
+        "comparable": {
+          "title": "Comparable",
+          "type": "boolean"
+        },
+        "improved_targets": {
+          "default": 0,
+          "title": "Improved Targets",
+          "type": "integer"
+        },
+        "regressed_targets": {
+          "default": 0,
+          "title": "Regressed Targets",
+          "type": "integer"
+        },
+        "improved_regressions": {
+          "default": 0,
+          "title": "Improved Regressions",
+          "type": "integer"
+        },
+        "regressed_regressions": {
+          "default": 0,
+          "title": "Regressed Regressions",
+          "type": "integer"
+        },
+        "target_variation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SeedVariation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "regression_variation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SeedVariation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "groups": {
+          "items": {
+            "$ref": "#/$defs/PairedGroupSummary"
+          },
+          "title": "Groups",
+          "type": "array"
+        }
+      },
+      "required": [
+        "reference",
+        "comparable"
+      ],
+      "title": "PairedSummary",
+      "type": "object"
+    },
+    "PortableBase": {
+      "additionalProperties": false,
+      "description": "What a shared artifact pins: exact checkpoint bytes at a load dtype, never a machine.\n\n``ModelIdentity.fingerprint`` also hashes the device, driver and library versions, so\nit identifies one runtime. Evidence pins that fingerprint. Anything meant to travel\nbetween machines pins this record instead, and is bound to the local runtime only\nafter the loaded weights digest has been verified.",
+      "properties": {
+        "backend": {
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Backend",
+          "type": "string"
+        },
+        "model_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "revision": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Revision",
+          "type": "string"
+        },
+        "dtype": {
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Dtype",
+          "type": "string"
+        },
+        "weights_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Weights Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "backend",
+        "model_id",
+        "revision",
+        "dtype",
+        "weights_sha256"
+      ],
+      "title": "PortableBase",
+      "type": "object"
+    },
+    "RecipeSpec": {
+      "additionalProperties": false,
+      "description": "A re-runnable derivation; coordinates expire with a checkpoint, recipes do not.\n\n``positive`` prompts exhibit the behaviour and ``negative`` prompts do not. Even\npositions of each list fit a direction and odd positions score it, so the site is\nnever chosen on the data that produced its direction.",
+      "properties": {
+        "schema_version": {
+          "const": "nrly-recipe/1",
+          "default": "nrly-recipe/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "kind": {
+          "const": "difference_of_means",
+          "default": "difference_of_means",
+          "title": "Kind",
+          "type": "string"
+        },
+        "behavior": {
+          "pattern": "^[a-z0-9][a-z0-9._+-]{1,79}$",
+          "title": "Behavior",
+          "type": "string"
+        },
+        "positive": {
+          "items": {
+            "$ref": "#/$defs/CaseSpec"
+          },
+          "maxItems": 2048,
+          "minItems": 4,
+          "title": "Positive",
+          "type": "array"
+        },
+        "negative": {
+          "items": {
+            "$ref": "#/$defs/CaseSpec"
+          },
+          "maxItems": 2048,
+          "minItems": 4,
+          "title": "Negative",
+          "type": "array"
+        },
+        "sites": {
+          "items": {
+            "$ref": "#/$defs/LeverSite"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Sites",
+          "type": "array"
+        },
+        "selection": {
+          "const": "held_out_separation",
+          "default": "held_out_separation",
+          "title": "Selection",
+          "type": "string"
+        },
+        "position": {
+          "const": "last_prompt_token",
+          "default": "last_prompt_token",
+          "title": "Position",
+          "type": "string"
+        },
+        "enable_thinking": {
+          "default": false,
+          "title": "Enable Thinking",
+          "type": "boolean"
+        },
+        "edit": {
+          "const": "remove_output_direction",
+          "default": "remove_output_direction",
+          "title": "Edit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "behavior",
+        "positive",
+        "negative",
+        "sites"
+      ],
+      "title": "RecipeSpec",
+      "type": "object"
+    },
+    "RefereeVerdict": {
+      "additionalProperties": false,
+      "description": "The final, held-out result of a registered study for one exact edit.",
+      "properties": {
+        "schema_version": {
+          "const": "nrly-verdict/1",
+          "default": "nrly-verdict/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "base": {
+          "$ref": "#/$defs/PortableBase"
+        },
+        "study_id": {
+          "pattern": "^[0-9a-f]{32}$",
+          "title": "Study Id",
+          "type": "string"
+        },
+        "study_spec_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Study Spec Digest",
+          "type": "string"
+        },
+        "holdout": {
+          "$ref": "#/$defs/HoldoutCommitment"
+        },
+        "operations_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Operations Digest",
+          "type": "string"
+        },
+        "nominee_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Nominee Digest",
+          "type": "string"
+        },
+        "runtime_fingerprint": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runtime Fingerprint",
+          "type": "string"
+        },
+        "inference_rule": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InferenceRule"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "truncation": {
+          "default": "unscored",
+          "enum": [
+            "unscored",
+            "fail"
+          ],
+          "title": "Truncation",
+          "type": "string"
+        },
+        "seeds": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Seeds",
+          "type": "array"
+        },
+        "controls": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 8,
+          "title": "Controls",
+          "type": "array"
+        },
+        "comparators": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 8,
+          "title": "Comparators",
+          "type": "array"
+        },
+        "development_cases": {
+          "minimum": 1,
+          "title": "Development Cases",
+          "type": "integer"
+        },
+        "assessment": {
+          "$ref": "#/$defs/StudyAssessment"
+        },
+        "final_error_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Final Error Code"
+        },
+        "finished_at": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Finished At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "base",
+        "study_id",
+        "study_spec_digest",
+        "holdout",
+        "operations_digest",
+        "nominee_digest",
+        "runtime_fingerprint",
+        "seeds",
+        "development_cases",
+        "assessment",
+        "finished_at"
+      ],
+      "title": "RefereeVerdict",
+      "type": "object"
+    },
+    "SeedVariation": {
+      "additionalProperties": false,
+      "description": "Descriptive paired variation, never an independence or population CI claim.",
+      "properties": {
+        "seed_count": {
+          "title": "Seed Count",
+          "type": "integer"
+        },
+        "cases_per_seed": {
+          "title": "Cases Per Seed",
+          "type": "integer"
+        },
+        "paired_executions": {
+          "title": "Paired Executions",
+          "type": "integer"
+        },
+        "mean_delta": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mean Delta"
+        },
+        "sample_stddev": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sample Stddev"
+        },
+        "minimum_delta": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Minimum Delta"
+        },
+        "maximum_delta": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Maximum Delta"
+        },
+        "interpretation": {
+          "const": "descriptive_across_registered_seeds_not_population_ci",
+          "default": "descriptive_across_registered_seeds_not_population_ci",
+          "title": "Interpretation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "seed_count",
+        "cases_per_seed",
+        "paired_executions",
+        "mean_delta",
+        "sample_stddev",
+        "minimum_delta",
+        "maximum_delta"
+      ],
+      "title": "SeedVariation",
+      "type": "object"
+    },
+    "SiteScore": {
+      "additionalProperties": false,
+      "description": "How well one candidate site separated the held-out contrast prompts.",
+      "properties": {
+        "site": {
+          "$ref": "#/$defs/LeverSite"
+        },
+        "separation": {
+          "title": "Separation",
+          "type": "number"
+        },
+        "difference_norm": {
+          "minimum": 0,
+          "title": "Difference Norm",
+          "type": "number"
+        },
+        "fit_cases": {
+          "minimum": 2,
+          "title": "Fit Cases",
+          "type": "integer"
+        },
+        "selection_cases": {
+          "minimum": 2,
+          "title": "Selection Cases",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "site",
+        "separation",
+        "difference_norm",
+        "fit_cases",
+        "selection_cases"
+      ],
+      "title": "SiteScore",
+      "type": "object"
+    },
+    "StrengthWindow": {
+      "additionalProperties": false,
+      "description": "Longest run of adjacent tested strengths that help targets and spare regressions.",
+      "properties": {
+        "low": {
+          "title": "Low",
+          "type": "number"
+        },
+        "high": {
+          "title": "High",
+          "type": "number"
+        },
+        "points": {
+          "minimum": 1,
+          "title": "Points",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "low",
+        "high",
+        "points"
+      ],
+      "title": "StrengthWindow",
+      "type": "object"
+    },
+    "StudyAssessment": {
+      "additionalProperties": false,
+      "properties": {
+        "scorer_version": {
+          "anyOf": [
+            {
+              "enum": [
+                "nrly-scorers/2",
+                "nrly-scorers/3"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scorer Version"
+        },
+        "verdict": {
+          "enum": [
+            "observed_improvement",
+            "no_change",
+            "regressed",
+            "inconclusive"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "recommendation": {
+          "default": "retain_original",
+          "enum": [
+            "retain_original",
+            "candidate_supported"
+          ],
+          "title": "Recommendation",
+          "type": "string"
+        },
+        "scope": {
+          "enum": [
+            "engineering_fixture",
+            "real_model"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "arms": {
+          "items": {
+            "$ref": "#/$defs/ArmSummary"
+          },
+          "title": "Arms",
+          "type": "array"
+        },
+        "comparisons": {
+          "items": {
+            "$ref": "#/$defs/PairedSummary"
+          },
+          "title": "Comparisons",
+          "type": "array"
+        },
+        "issues": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "inference": {
+          "items": {
+            "$ref": "#/$defs/PairedInference"
+          },
+          "title": "Inference",
+          "type": "array"
+        }
+      },
+      "required": [
+        "verdict",
+        "scope"
+      ],
+      "title": "StudyAssessment",
+      "type": "object"
+    },
+    "StudyGroupSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "group": {
+          "title": "Group",
+          "type": "string"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "integer"
+        },
+        "unscored": {
+          "title": "Unscored",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "group",
+        "total",
+        "passed",
+        "unscored"
+      ],
+      "title": "StudyGroupSummary",
+      "type": "object"
+    },
+    "TaskAdapterSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "nrly-tasks/1",
+          "default": "nrly-tasks/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "multiple_choice",
+            "json",
+            "instruction_constraints"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "choices": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 26,
+          "title": "Choices",
+          "type": "array"
+        },
+        "required": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Required",
+          "type": "array"
+        },
+        "forbidden": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Forbidden",
+          "type": "array"
+        },
+        "max_chars": {
+          "anyOf": [
+            {
+              "maximum": 1000000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Chars"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "TaskAdapterSpec",
+      "type": "object"
+    },
+    "TensorArtifact": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "nrly-tensor/1",
+          "default": "nrly-tensor/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "dtype": {
+          "enum": [
+            "float32",
+            "float64"
+          ],
+          "title": "Dtype",
+          "type": "string"
+        },
+        "shape": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Shape",
+          "type": "array"
+        },
+        "byte_length": {
+          "maximum": 16777216,
+          "minimum": 1,
+          "title": "Byte Length",
+          "type": "integer"
+        },
+        "id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sha256",
+        "dtype",
+        "shape",
+        "byte_length",
+        "id"
+      ],
+      "title": "TensorArtifact",
+      "type": "object"
+    },
+    "TensorSlice": {
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "default": 0,
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "stop": {
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "title": "Stop",
+          "type": "integer"
+        },
+        "step": {
+          "default": 1,
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "title": "Step",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "stop"
+      ],
+      "title": "TensorSlice",
+      "type": "object"
+    },
+    "WeightOperationSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target"
+        },
+        "factor": {
+          "default": 1.0,
+          "title": "Factor",
+          "type": "number"
+        },
+        "values": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Values",
+          "type": "array"
+        },
+        "shape": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 8,
+          "title": "Shape",
+          "type": "array"
+        },
+        "indices": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 65536,
+          "title": "Indices",
+          "type": "array"
+        },
+        "position": {
+          "default": "all",
+          "enum": [
+            "all",
+            "last"
+          ],
+          "title": "Position",
+          "type": "string"
+        },
+        "rank": {
+          "anyOf": [
+            {
+              "maximum": 256,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rank"
+        },
+        "left": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Left",
+          "type": "array"
+        },
+        "right": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 65536,
+          "title": "Right",
+          "type": "array"
+        },
+        "slices": {
+          "items": {
+            "$ref": "#/$defs/TensorSlice"
+          },
+          "maxItems": 8,
+          "title": "Slices",
+          "type": "array"
+        },
+        "kind": {
+          "enum": [
+            "weight_scale",
+            "weight_replace",
+            "weight_patch",
+            "weight_add",
+            "weight_sparse_add",
+            "weight_low_rank",
+            "weight_slice_scale"
+          ],
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "WeightOperationSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Immutable, content-addressed map entry; a revision names its parent.",
+  "properties": {
+    "schema_version": {
+      "const": "nrly-lever/1",
+      "default": "nrly-lever/1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "name": {
+      "maxLength": 1800,
+      "minLength": 3,
+      "title": "Name",
+      "type": "string"
+    },
+    "behavior": {
+      "pattern": "^[a-z0-9][a-z0-9._+-]{1,79}$",
+      "title": "Behavior",
+      "type": "string"
+    },
+    "base": {
+      "$ref": "#/$defs/PortableBase"
+    },
+    "sites": {
+      "items": {
+        "$ref": "#/$defs/LeverSite"
+      },
+      "maxItems": 8,
+      "minItems": 1,
+      "title": "Sites",
+      "type": "array"
+    },
+    "derivation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Derivation"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "strength": {
+      "anyOf": [
+        {
+          "maximum": 16,
+          "minimum": -16,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Strength"
+    },
+    "operations": {
+      "items": {
+        "$ref": "#/$defs/WeightOperationSpec"
+      },
+      "maxItems": 32,
+      "title": "Operations",
+      "type": "array"
+    },
+    "dial": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Dial"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "legend": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Legend"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "verdict": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RefereeVerdict"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "replications": {
+      "items": {
+        "$ref": "#/$defs/RefereeVerdict"
+      },
+      "maxItems": 64,
+      "title": "Replications",
+      "type": "array"
+    },
+    "contraindications": {
+      "items": {
+        "$ref": "#/$defs/Contraindication"
+      },
+      "maxItems": 64,
+      "title": "Contraindications",
+      "type": "array"
+    },
+    "attribution": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 32,
+      "title": "Attribution",
+      "type": "array"
+    },
+    "parent_id": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Id"
+    },
+    "status": {
+      "default": "pencil",
+      "enum": [
+        "pencil",
+        "inked",
+        "struck"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "behavior",
+    "base",
+    "sites",
+    "id"
+  ],
+  "title": "LeverEntry",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

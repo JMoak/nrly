@@ -34,8 +34,7 @@ from nrly.contracts import (
     canonical_json,
     digest,
 )
-from nrly.evaluation.reports import SCORER_VERSION
-from nrly.evaluation.study_reports import assess_study_arms
+from nrly.evaluation.study_reports import assess_study_arms, study_scorer_version
 from nrly.runner import Runner
 from nrly.store import TERMINAL, now
 from nrly.study_contracts import (
@@ -47,9 +46,12 @@ from nrly.study_contracts import (
     StudyRecord,
     StudySpec,
     StudyUsage,
+    has_inference_cases,
     has_scoring_contract,
+    study_arm_generation,
     study_arm_name,
     study_arm_names,
+    study_experiment_schema,
     study_seeds,
     validate_targets,
 )
@@ -67,7 +69,7 @@ def _request(value: str | None) -> None:
 
 def _inconclusive(spec: StudySpec, issue: str) -> StudyAssessment:
     return StudyAssessment(
-        scorer_version=SCORER_VERSION,
+        scorer_version=study_scorer_version(spec),
         verdict="inconclusive",
         scope="engineering_fixture" if spec.model.backend == "tiny" else "real_model",
         issues=[issue],
@@ -85,6 +87,10 @@ def _has_comparable_evidence(spec: StudySpec, assessment: StudyAssessment) -> bo
         and all(arm.complete for arm in assessment.arms)
         and [pair.reference for pair in assessment.comparisons] == names[:-1]
         and all(pair.comparable for pair in assessment.comparisons)
+        and (
+            spec.inference is None
+            or [pair.reference for pair in assessment.inference] == names[:-1]
+        )
     )
 
 
@@ -521,6 +527,11 @@ class StudyEngine(StudyReader):
                 "invalid_holdout",
                 "holdout requires bounded, unique, scored test targets/regressions",
             )
+        if spec.inference is not None and not has_inference_cases(sealed):
+            raise NrlyError(
+                "invalid_holdout",
+                "an inference rule requires at least six target and six regression holdout cases",
+            )
         public_ids = {case.id for case in spec.development_cases}
 
         def prompt_key(case: CaseSpec) -> str:
@@ -547,10 +558,12 @@ class StudyEngine(StudyReader):
             raise NrlyError("holdout_overlap", "holdout ids and exact inputs must be disjoint")
         for comparator in [None, *spec.comparators]:
             ExperimentSpec(
-                schema_version="0.3" if spec.schema_version == "0.2" else "0.2",
+                schema_version=study_experiment_schema(spec),
                 name="sealed study admission validation",
                 model=comparator.model if comparator and comparator.model else spec.model,
-                generation=spec.generation,
+                generation=comparator.generation
+                if comparator and comparator.generation
+                else spec.generation,
                 cases=comparator.transform_cases(sealed) if comparator else sealed,
                 budget=spec.run_budget,
             )
@@ -855,7 +868,6 @@ class StudyEngine(StudyReader):
         ]
         results: list[tuple[str, RunRecord]] = []
         for seed in study_seeds(study.spec):
-            generation = study.spec.generation.model_copy(update={"seed": seed})
             for name, program, model, arm_cases, comparator_key in programs:
                 if event.is_set():
                     return results
@@ -869,10 +881,11 @@ class StudyEngine(StudyReader):
                 if pinned is not None and program.expected_base is None:
                     program = program.model_copy(update={"expected_base": pinned.fingerprint})
                 spec = ExperimentSpec(
-                    schema_version="0.3" if study.spec.schema_version == "0.2" else "0.2",
+                    schema_version=study_experiment_schema(study.spec),
                     name="controlled study arm",
                     model=model,
-                    generation=generation,
+                    # A generation comparator decodes the unedited model differently.
+                    generation=study_arm_generation(study.spec, name, seed),
                     program=program,
                     cases=arm_cases,
                     budget=study.spec.run_budget,

@@ -85,6 +85,18 @@
           ],
           "default": null,
           "title": "Group"
+        },
+        "finished": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished"
         }
       },
       "required": [
@@ -252,9 +264,21 @@
           "type": "string"
         },
         "scorer_version": {
-          "const": "nrly-scorers/2",
           "default": "nrly-scorers/2",
+          "enum": [
+            "nrly-scorers/2",
+            "nrly-scorers/3"
+          ],
           "title": "Scorer Version",
+          "type": "string"
+        },
+        "truncation": {
+          "default": "unscored",
+          "enum": [
+            "unscored",
+            "fail"
+          ],
+          "title": "Truncation",
           "type": "string"
         },
         "run_id": {
@@ -350,6 +374,32 @@
             }
           ],
           "title": "Accuracy"
+        },
+        "finished": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished"
+        },
+        "finished_passed": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished Passed"
         }
       },
       "required": [

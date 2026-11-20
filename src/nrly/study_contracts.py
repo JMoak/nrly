@@ -32,21 +32,42 @@ class CandidateSpec(Contract):
 
 
 class ComparatorSpec(Contract):
-    """Operator-registered alternative; an external checkpoint may be fine-tuned elsewhere."""
+    """Operator-registered alternative; an external checkpoint may be fine-tuned elsewhere.
+
+    A ``generation`` comparator runs the unedited model under different decoding settings
+    (for example thinking disabled or a repetition penalty). Its seed is replaced by each
+    registered study seed, so the stored seed must be the canonical zero.
+    """
 
     name: str = Field(min_length=1, max_length=120)
-    kind: Literal["prompt", "model"]
+    kind: Literal["prompt", "model", "generation"]
     prefix: str = Field(default="", max_length=10000)
     suffix: str = Field(default="", max_length=10000)
     model: ModelSpec | None = None
+    generation: GenerationSpec | None = Field(default=None, exclude_if=lambda v: v is None)
 
     @model_validator(mode="after")
     def valid_comparator(self) -> ComparatorSpec:
         if self.kind == "prompt":
-            if self.model is not None or not (self.prefix or self.suffix):
+            if (
+                self.model is not None
+                or self.generation is not None
+                or not (self.prefix or self.suffix)
+            ):
                 raise ValueError("prompt comparators require prefix/suffix and no model override")
-        elif self.model is None or self.prefix or self.suffix:
-            raise ValueError("model comparators require only a pinned model")
+        elif self.kind == "model":
+            if self.model is None or self.prefix or self.suffix or self.generation is not None:
+                raise ValueError("model comparators require only a pinned model")
+        elif (
+            self.generation is None
+            or self.generation.seed != 0
+            or self.model is not None
+            or self.prefix
+            or self.suffix
+        ):
+            raise ValueError(
+                "generation comparators require only decoding settings with the canonical seed 0"
+            )
         return self
 
     def transform_cases(self, cases: list[CaseSpec]) -> list[CaseSpec]:
@@ -65,6 +86,29 @@ class ComparatorSpec(Contract):
                 data["input"] = self.prefix + (case.input or "") + self.suffix
             transformed.append(CaseSpec.model_validate(data))
         return transformed
+
+
+MIN_INFERENCE_CASES = 6
+
+
+class InferenceRule(Contract):
+    """Preregistered paired inference; cases are the independent unit, seeds are nested.
+
+    Each case contributes its mean paired score difference across the registered seeds.
+    The interval is a percentile bootstrap over cases at confidence ``1 - alpha``; the
+    p-value is an exact two-sided sign test on the nonzero case differences. A candidate
+    is supported only when its target effect is superior to the original AND to every
+    registered control and comparator (an intersection-union test, so the joint claim
+    keeps level ``alpha``), and its regression-case effect against the original is
+    non-inferior within ``regression_margin``. Fewer than six cases per role cannot reach
+    significance and are refused at admission.
+    """
+
+    schema_version: Literal["nrly-inference/1"] = "nrly-inference/1"
+    alpha: float = Field(default=0.05, gt=0, le=0.2)
+    regression_margin: float = Field(default=0.02, ge=0, le=0.5)
+    resamples: int = Field(default=10000, ge=1000, le=100000)
+    bootstrap_seed: int = Field(default=0, ge=0, le=2**32 - 1)
 
 
 class StudyBudget(Contract):
@@ -89,7 +133,7 @@ class StudyUsage(Contract):
 
 
 class StudySpec(Contract):
-    schema_version: Literal["0.1", "0.2"] = "0.1"
+    schema_version: Literal["0.1", "0.2", "0.3"] = "0.1"
     name: str = Field(min_length=1, max_length=160)
     model: ModelSpec = Field(default_factory=ModelSpec)
     generation: GenerationSpec = Field(default_factory=GenerationSpec)
@@ -104,9 +148,33 @@ class StudySpec(Contract):
     mutable_targets: list[str] | None = Field(default=None, min_length=1, max_length=128)
     run_budget: BudgetSpec = Field(default_factory=BudgetSpec)
     budget: StudyBudget = Field(default_factory=StudyBudget)
+    # "fail" scores an output cut off at the token limit as a task failure and reports
+    # finish rate and accuracy-when-finished. The default keeps truncation unscored.
+    truncation: Literal["unscored", "fail"] = Field(
+        default="unscored", exclude_if=lambda v: v == "unscored"
+    )
+    inference: InferenceRule | None = Field(default=None, exclude_if=lambda v: v is None)
 
     @model_validator(mode="after")
     def pinned_design(self) -> StudySpec:
+        if self.schema_version != "0.3" and (
+            self.truncation != "unscored"
+            or self.inference is not None
+            or any(item.kind == "generation" for item in self.comparators)
+        ):
+            raise ValueError(
+                "truncation scoring, inference rules, and generation comparators "
+                "require study schema 0.3"
+            )
+        for item in self.comparators:
+            if item.generation is not None and item.generation == self.generation.model_copy(
+                update={"seed": 0}
+            ):
+                raise ValueError("a generation comparator must change a decoding setting")
+        if self.inference is not None and not has_inference_cases(self.development_cases):
+            raise ValueError(
+                "an inference rule requires at least six target and six regression cases"
+            )
         if self.schema_version == "0.1" and (
             self.seeds is not None
             or self.comparators
@@ -149,13 +217,15 @@ class StudySpec(Contract):
         # Reuse actual run validation at admission, including schema and generation limits.
         for comparator in [None, *self.comparators]:
             ExperimentSpec(
-                schema_version="0.3" if self.schema_version == "0.2" else "0.2",
+                schema_version=study_experiment_schema(self),
                 name="study admission validation",
                 model=comparator.model if comparator and comparator.model else self.model,
                 cases=comparator.transform_cases(self.development_cases)
                 if comparator
                 else self.development_cases,
-                generation=self.generation,
+                generation=comparator.generation
+                if comparator and comparator.generation
+                else self.generation,
                 budget=self.run_budget,
             )
         return self
@@ -165,6 +235,28 @@ def has_scoring_contract(case: CaseSpec) -> bool:
     return case.expected is not None or (
         case.adapter is not None and case.adapter.kind == "instruction_constraints"
     )
+
+
+def has_inference_cases(cases: list[CaseSpec]) -> bool:
+    """Both roles need enough independent cases for an exact sign test to reach 0.05."""
+    return (
+        sum(case.role == "target" for case in cases) >= MIN_INFERENCE_CASES
+        and sum(case.role == "regression" for case in cases) >= MIN_INFERENCE_CASES
+    )
+
+
+def study_experiment_schema(spec: StudySpec) -> Literal["0.2", "0.3"]:
+    """Experiment schema used by every arm of a study with this schema version."""
+    return "0.2" if spec.schema_version == "0.1" else "0.3"
+
+
+def study_arm_generation(spec: StudySpec, name: str, seed: int) -> GenerationSpec:
+    """Registered decoding settings for one arm (``name`` without its seed suffix)."""
+    base = spec.generation
+    for comparator in spec.comparators:
+        if name == "comparator:" + comparator.name and comparator.generation is not None:
+            base = comparator.generation
+    return base.model_copy(update={"seed": seed})
 
 
 def study_seeds(spec: StudySpec) -> list[int]:
@@ -246,6 +338,48 @@ class ArmSummary(Contract):
     regression_passed: int
     seed: int | None = Field(default=None, exclude_if=lambda v: v is None)
     groups: list[StudyGroupSummary] = Field(default_factory=list, exclude_if=lambda v: not v)
+    # Reported only under truncation="fail": outputs that ended before the token limit,
+    # and how many of those passed. Finish rate is finished / total.
+    finished: int | None = Field(default=None, ge=0, exclude_if=lambda v: v is None)
+    finished_passed: int | None = Field(default=None, ge=0, exclude_if=lambda v: v is None)
+
+
+class EffectEstimate(Contract):
+    """Candidate minus reference on one role's cases; positive favours the candidate."""
+
+    cases: int = Field(ge=1)
+    seeds: int = Field(ge=1)
+    mean_difference: float = Field(ge=-1, le=1)
+    ci_low: float = Field(ge=-1, le=1)
+    ci_high: float = Field(ge=-1, le=1)
+    confidence: float = Field(gt=0, lt=1)
+    improved_cases: int = Field(ge=0)
+    regressed_cases: int = Field(ge=0)
+    tied_cases: int = Field(ge=0)
+    sign_test_p: float = Field(ge=0, le=1)
+    method: Literal["case_percentile_bootstrap+exact_sign_test"] = (
+        "case_percentile_bootstrap+exact_sign_test"
+    )
+
+    @model_validator(mode="after")
+    def consistent(self) -> EffectEstimate:
+        if self.improved_cases + self.regressed_cases + self.tied_cases != self.cases:
+            raise ValueError("case direction counts must sum to the number of cases")
+        if not self.ci_low <= self.ci_high:
+            raise ValueError("interval bounds are out of order")
+        return self
+
+
+class PairedInference(Contract):
+    """One registered reference arm against the candidate under an InferenceRule."""
+
+    reference: str
+    target: EffectEstimate
+    regression: EffectEstimate
+    target_superior: bool
+    target_harmed: bool
+    regression_non_inferior: bool
+    regression_inferior: bool
 
 
 class PairedSummary(Contract):
@@ -261,7 +395,8 @@ class PairedSummary(Contract):
 
 
 class StudyAssessment(Contract):
-    scorer_version: Literal["nrly-scorers/2"] | None = Field(
+    # nrly-scorers/3 is nrly-scorers/2 plus the registered truncation="fail" policy.
+    scorer_version: Literal["nrly-scorers/2", "nrly-scorers/3"] | None = Field(
         default=None, exclude_if=lambda v: v is None
     )
     verdict: Literal["observed_improvement", "no_change", "regressed", "inconclusive"]
@@ -270,6 +405,9 @@ class StudyAssessment(Contract):
     arms: list[ArmSummary] = Field(default_factory=list)
     comparisons: list[PairedSummary] = Field(default_factory=list)
     issues: list[str] = Field(default_factory=list)
+    # Present only when the study registered an InferenceRule; one entry per reference
+    # arm, in the same order as ``comparisons``.
+    inference: list[PairedInference] = Field(default_factory=list, exclude_if=lambda v: not v)
 
 
 class StudyRecord(Contract):

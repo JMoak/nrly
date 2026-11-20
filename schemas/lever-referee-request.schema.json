@@ -1,0 +1,592 @@
+{
+  "$defs": {
+    "BudgetSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "wall_seconds": {
+          "default": 120,
+          "exclusiveMinimum": 0,
+          "maximum": 86400,
+          "title": "Wall Seconds",
+          "type": "number"
+        },
+        "max_cases": {
+          "default": 100,
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Max Cases",
+          "type": "integer"
+        },
+        "max_output_tokens": {
+          "default": 4096,
+          "maximum": 1000000,
+          "minimum": 1,
+          "title": "Max Output Tokens",
+          "type": "integer"
+        },
+        "max_capture_bytes": {
+          "default": 262144,
+          "maximum": 100000000,
+          "minimum": 0,
+          "title": "Max Capture Bytes",
+          "type": "integer"
+        }
+      },
+      "title": "BudgetSpec",
+      "type": "object"
+    },
+    "CaseSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "input": {
+          "anyOf": [
+            {
+              "maxLength": 100000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected"
+        },
+        "scorer": {
+          "default": "exact",
+          "enum": [
+            "exact",
+            "numeric",
+            "final_number"
+          ],
+          "title": "Scorer",
+          "type": "string"
+        },
+        "tolerance": {
+          "default": 1e-06,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Tolerance",
+          "type": "number"
+        },
+        "split": {
+          "default": "discovery",
+          "enum": [
+            "discovery",
+            "validation",
+            "test"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "role": {
+          "default": "target",
+          "enum": [
+            "target",
+            "regression"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "messages": {
+          "items": {
+            "$ref": "#/$defs/ChatMessage"
+          },
+          "maxItems": 128,
+          "title": "Messages",
+          "type": "array"
+        },
+        "continuation": {
+          "anyOf": [
+            {
+              "maxLength": 100000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Continuation"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group"
+        },
+        "adapter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaskAdapterSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "CaseSpec",
+      "type": "object"
+    },
+    "ChatMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "system",
+            "user",
+            "assistant"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "content": {
+          "maxLength": 100000,
+          "minLength": 1,
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "ChatMessage",
+      "type": "object"
+    },
+    "ComparatorSpec": {
+      "additionalProperties": false,
+      "description": "Operator-registered alternative; an external checkpoint may be fine-tuned elsewhere.\n\nA ``generation`` comparator runs the unedited model under different decoding settings\n(for example thinking disabled or a repetition penalty). Its seed is replaced by each\nregistered study seed, so the stored seed must be the canonical zero.",
+      "properties": {
+        "name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "prompt",
+            "model",
+            "generation"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "prefix": {
+          "default": "",
+          "maxLength": 10000,
+          "title": "Prefix",
+          "type": "string"
+        },
+        "suffix": {
+          "default": "",
+          "maxLength": 10000,
+          "title": "Suffix",
+          "type": "string"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "generation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GenerationSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "name",
+        "kind"
+      ],
+      "title": "ComparatorSpec",
+      "type": "object"
+    },
+    "GenerationSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "max_new_tokens": {
+          "default": 32,
+          "maximum": 32768,
+          "minimum": 1,
+          "title": "Max New Tokens",
+          "type": "integer"
+        },
+        "temperature": {
+          "default": 0.0,
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "seed": {
+          "default": 0,
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "enable_thinking": {
+          "default": false,
+          "title": "Enable Thinking",
+          "type": "boolean"
+        },
+        "top_p": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 1,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top P"
+        },
+        "top_k": {
+          "anyOf": [
+            {
+              "maximum": 1000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top K"
+        },
+        "min_new_tokens": {
+          "anyOf": [
+            {
+              "maximum": 32768,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min New Tokens"
+        },
+        "repetition_penalty": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 10,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Repetition Penalty"
+        }
+      },
+      "title": "GenerationSpec",
+      "type": "object"
+    },
+    "InferenceRule": {
+      "additionalProperties": false,
+      "description": "Preregistered paired inference; cases are the independent unit, seeds are nested.\n\nEach case contributes its mean paired score difference across the registered seeds.\nThe interval is a percentile bootstrap over cases at confidence ``1 - alpha``; the\np-value is an exact two-sided sign test on the nonzero case differences. A candidate\nis supported only when its target effect is superior to the original AND to every\nregistered control and comparator (an intersection-union test, so the joint claim\nkeeps level ``alpha``), and its regression-case effect against the original is\nnon-inferior within ``regression_margin``. Fewer than six cases per role cannot reach\nsignificance and are refused at admission.",
+      "properties": {
+        "schema_version": {
+          "const": "nrly-inference/1",
+          "default": "nrly-inference/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "alpha": {
+          "default": 0.05,
+          "exclusiveMinimum": 0,
+          "maximum": 0.2,
+          "title": "Alpha",
+          "type": "number"
+        },
+        "regression_margin": {
+          "default": 0.02,
+          "maximum": 0.5,
+          "minimum": 0,
+          "title": "Regression Margin",
+          "type": "number"
+        },
+        "resamples": {
+          "default": 10000,
+          "maximum": 100000,
+          "minimum": 1000,
+          "title": "Resamples",
+          "type": "integer"
+        },
+        "bootstrap_seed": {
+          "default": 0,
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Bootstrap Seed",
+          "type": "integer"
+        }
+      },
+      "title": "InferenceRule",
+      "type": "object"
+    },
+    "ModelSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "default": "tiny",
+          "enum": [
+            "tiny",
+            "huggingface"
+          ],
+          "title": "Backend",
+          "type": "string"
+        },
+        "model_id": {
+          "default": "nrly/tiny-sum-v1",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "revision": {
+          "default": "1",
+          "title": "Revision",
+          "type": "string"
+        },
+        "device": {
+          "default": "cpu",
+          "enum": [
+            "cpu",
+            "cuda",
+            "auto"
+          ],
+          "title": "Device",
+          "type": "string"
+        },
+        "dtype": {
+          "default": "float32",
+          "enum": [
+            "float32",
+            "float16",
+            "bfloat16"
+          ],
+          "title": "Dtype",
+          "type": "string"
+        },
+        "local_files_only": {
+          "default": true,
+          "title": "Local Files Only",
+          "type": "boolean"
+        }
+      },
+      "title": "ModelSpec",
+      "type": "object"
+    },
+    "TaskAdapterSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "nrly-tasks/1",
+          "default": "nrly-tasks/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "multiple_choice",
+            "json",
+            "instruction_constraints"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "choices": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 26,
+          "title": "Choices",
+          "type": "array"
+        },
+        "required": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Required",
+          "type": "array"
+        },
+        "forbidden": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Forbidden",
+          "type": "array"
+        },
+        "max_chars": {
+          "anyOf": [
+            {
+              "maximum": 1000000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Chars"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "TaskAdapterSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "model": {
+      "$ref": "#/$defs/ModelSpec"
+    },
+    "development_cases": {
+      "items": {
+        "$ref": "#/$defs/CaseSpec"
+      },
+      "maxItems": 10000,
+      "minItems": 1,
+      "title": "Development Cases",
+      "type": "array"
+    },
+    "comparators": {
+      "items": {
+        "$ref": "#/$defs/ComparatorSpec"
+      },
+      "maxItems": 8,
+      "title": "Comparators",
+      "type": "array"
+    },
+    "generation": {
+      "$ref": "#/$defs/GenerationSpec"
+    },
+    "seeds": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Seeds"
+    },
+    "inference": {
+      "$ref": "#/$defs/InferenceRule"
+    },
+    "truncation": {
+      "default": "unscored",
+      "enum": [
+        "unscored",
+        "fail"
+      ],
+      "title": "Truncation",
+      "type": "string"
+    },
+    "run_budget": {
+      "$ref": "#/$defs/BudgetSpec"
+    },
+    "controls": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 8,
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Controls"
+    },
+    "name": {
+      "anyOf": [
+        {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Name"
+    }
+  },
+  "required": [
+    "model",
+    "development_cases"
+  ],
+  "title": "RefereeRequest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

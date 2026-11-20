@@ -5,12 +5,14 @@ import hashlib
 import json
 import platform
 from abc import ABC, abstractmethod
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from time import perf_counter
 from types import TracebackType
 from typing import cast
 
+import numpy as np
 import torch
+from numpy.typing import NDArray
 from pydantic import JsonValue
 from torch import nn
 
@@ -32,6 +34,9 @@ from nrly.contracts import (
 )
 from nrly.kernel import capture_activations, intervene, tensor_digest
 from nrly.kernel.inspection import inspect_tensor
+
+MAX_READ_ELEMENTS = 16 * 1024 * 1024
+MAX_OBSERVED_PROMPTS = 4096
 
 
 class TorchBackend(ABC):
@@ -125,6 +130,33 @@ class TorchBackend(ABC):
         if spec.target not in parameters:
             raise NrlyError("target_mismatch", f"unknown parameter: {spec.target}")
         return inspect_tensor(parameters[spec.target], spec)
+
+    def read_parameter(self, target: str) -> NDArray[np.float64]:
+        """Copy one whole parameter for trusted local authoring; never an MCP operation."""
+        self._require_open()
+        parameters = dict(self.model.named_parameters(remove_duplicate=False))
+        if target not in parameters:
+            raise NrlyError("target_mismatch", f"unknown parameter: {target}")
+        value = parameters[target].detach()
+        if not value.is_floating_point() or value.numel() > MAX_READ_ELEMENTS:
+            raise NrlyError(
+                "budget_exceeded", "authoring reads require a real tensor of at most 16M elements"
+            )
+        result: NDArray[np.float64] = value.to(torch.float64).cpu().numpy().copy()
+        if not np.isfinite(result).all():
+            raise NrlyError("nonfinite_tensor", "parameter contains non-finite values")
+        return result
+
+    def last_token_activations(
+        self,
+        cases: Sequence[CaseSpec],
+        generation: GenerationSpec,
+        targets: Sequence[str],
+    ) -> list[dict[str, list[float]]]:
+        """Module outputs at each prompt's final token, one forward pass per prompt."""
+        raise NrlyError(
+            "unsupported_operation", "this backend does not observe prompt activations"
+        )
 
     def run_case(
         self,

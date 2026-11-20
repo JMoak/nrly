@@ -1,0 +1,118 @@
+{
+  "$defs": {
+    "NeuronpediaRef": {
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "source_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "fetch_labels": {
+          "default": false,
+          "title": "Fetch Labels",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "model",
+        "source_id"
+      ],
+      "title": "NeuronpediaRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Which inherited dictionary to read. ``filename`` may contain ``{layer}``.",
+  "properties": {
+    "kind": {
+      "enum": [
+        "transcoder",
+        "sae"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "repo_id": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Repo Id",
+      "type": "string"
+    },
+    "revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Revision",
+      "type": "string"
+    },
+    "filename": {
+      "maxLength": 300,
+      "minLength": 1,
+      "title": "Filename",
+      "type": "string"
+    },
+    "license": {
+      "maxLength": 80,
+      "minLength": 1,
+      "title": "License",
+      "type": "string"
+    },
+    "writes": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Writes",
+      "type": "string"
+    },
+    "tensor": {
+      "default": "W_dec",
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Tensor",
+      "type": "string"
+    },
+    "orientation": {
+      "default": "latents_by_width",
+      "enum": [
+        "latents_by_width",
+        "width_by_latents"
+      ],
+      "title": "Orientation",
+      "type": "string"
+    },
+    "top_k": {
+      "default": 8,
+      "maximum": 32,
+      "minimum": 1,
+      "title": "Top K",
+      "type": "integer"
+    },
+    "neuronpedia": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/NeuronpediaRef"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "kind",
+    "repo_id",
+    "revision",
+    "filename",
+    "license",
+    "writes"
+  ],
+  "title": "LegendRequest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

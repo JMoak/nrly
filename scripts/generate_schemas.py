@@ -23,7 +23,9 @@ from nrly.contracts import (
 from nrly.decision_cli import DecisionExperiment
 from nrly.decision_contracts import DecisionAssessment, DecisionProtocol, DecisionRun
 from nrly.decision_handoff import ShadowHandoff
-from nrly.deployment import PatchManifest
+from nrly.deployment import PatchManifest, PortablePatchManifest
+from nrly.lever_app import DeriveRequest, DialRequest, LegendRequest, RefereeRequest
+from nrly.lever_contracts import LeverEntry, RecipeSpec
 from nrly.lineage import EditRevision, SequentialReport
 from nrly.study_contracts import (
     AttemptRecord,
@@ -48,6 +50,13 @@ SCHEMAS: dict[str, type[BaseModel]] = {
     "tensor-artifact": TensorArtifact,
     "edit-revision": EditRevision,
     "patch": PatchManifest,
+    "portable-patch": PortablePatchManifest,
+    "lever": LeverEntry,
+    "recipe": RecipeSpec,
+    "lever-derive-request": DeriveRequest,
+    "lever-dial-request": DialRequest,
+    "lever-referee-request": RefereeRequest,
+    "lever-legend-request": LegendRequest,
     "sequential-report": SequentialReport,
     "experiment": ExperimentSpec,
     "model": ModelSpec,

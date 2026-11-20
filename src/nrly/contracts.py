@@ -438,6 +438,48 @@ class ModelIdentity(Contract):
     details: dict[str, JsonValue] = Field(default_factory=dict)
 
 
+class PortableBase(Contract):
+    """What a shared artifact pins: exact checkpoint bytes at a load dtype, never a machine.
+
+    ``ModelIdentity.fingerprint`` also hashes the device, driver and library versions, so
+    it identifies one runtime. Evidence pins that fingerprint. Anything meant to travel
+    between machines pins this record instead, and is bound to the local runtime only
+    after the loaded weights digest has been verified.
+    """
+
+    backend: str = Field(min_length=1, max_length=40)
+    model_id: str = Field(min_length=1, max_length=200)
+    revision: str = Field(min_length=1, max_length=200)
+    dtype: str = Field(min_length=1, max_length=40)
+    weights_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @classmethod
+    def from_identity(cls, identity: ModelIdentity) -> PortableBase:
+        dtype = identity.details.get("dtype")
+        weights = identity.details.get("weights_sha256")
+        if not isinstance(dtype, str) or not isinstance(weights, str):
+            raise NrlyError(
+                "invalid_identity", "model identity lacks its dtype or base weights digest"
+            )
+        return cls(
+            backend=identity.backend,
+            model_id=identity.model_id,
+            revision=identity.revision,
+            dtype=dtype,
+            weights_sha256=weights,
+        )
+
+    def matches(self, identity: ModelIdentity) -> bool:
+        """True when a loaded runtime holds exactly these weights at this dtype."""
+        return (
+            identity.backend == self.backend
+            and identity.model_id == self.model_id
+            and identity.revision == self.revision
+            and identity.details.get("dtype") == self.dtype
+            and identity.details.get("weights_sha256") == self.weights_sha256
+        )
+
+
 class TensorInfo(Contract):
     name: str
     kind: Literal["parameter", "module"]

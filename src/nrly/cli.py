@@ -55,6 +55,7 @@ def emit(value: Any) -> None:
 def parser() -> argparse.ArgumentParser:
     from nrly.artifact_cli import register_artifact_commands
     from nrly.decision_cli import register_decision_commands
+    from nrly.lever_cli import register_lever_commands
 
     result = argparse.ArgumentParser(description="nrly — weight-space programming workbench")
     result.add_argument("--root", type=Path, default=Path(".nrly"), help="local run store")
@@ -62,6 +63,7 @@ def parser() -> argparse.ArgumentParser:
     commands = result.add_subparsers(dest="command", required=True)
     register_artifact_commands(commands)
     register_decision_commands(commands)
+    register_lever_commands(commands)
     run = commands.add_parser("run", help="execute a JSON experiment specification")
     run.add_argument("spec", type=Path)
     run.add_argument("--request-id")
@@ -121,6 +123,13 @@ def parser() -> argparse.ArgumentParser:
             "decision-run",
             "decision-assessment",
             "shadow-handoff",
+            "portable-patch",
+            "lever",
+            "recipe",
+            "lever-derive-request",
+            "lever-dial-request",
+            "lever-referee-request",
+            "lever-legend-request",
         ],
         default="experiment",
         nargs="?",
@@ -194,6 +203,12 @@ def execute(args: argparse.Namespace) -> int:
         value, code = execute_artifact_command(args)
         emit(value)
         return code
+    if args.command == "lever":
+        from nrly.lever_cli import execute_lever_command
+
+        value, code = execute_lever_command(args)
+        emit(value)
+        return code
     if args.command in {"diagnostics", "capture"}:
         from nrly.evidence import capture_page, diagnostics_page
 
@@ -219,11 +234,20 @@ def execute(args: argparse.Namespace) -> int:
         from nrly.decision_cli import DecisionExperiment
         from nrly.decision_contracts import DecisionAssessment, DecisionProtocol, DecisionRun
         from nrly.decision_handoff import ShadowHandoff
-        from nrly.deployment import PatchManifest
+        from nrly.deployment import PatchManifest, PortablePatchManifest
+        from nrly.lever_app import DeriveRequest, DialRequest, LegendRequest, RefereeRequest
+        from nrly.lever_contracts import LeverEntry, RecipeSpec
         from nrly.lineage import EditRevision
         from nrly.study_contracts import ComparatorSpec
 
         models: dict[str, type[BaseModel]] = {
+            "portable-patch": PortablePatchManifest,
+            "lever": LeverEntry,
+            "recipe": RecipeSpec,
+            "lever-derive-request": DeriveRequest,
+            "lever-dial-request": DialRequest,
+            "lever-referee-request": RefereeRequest,
+            "lever-legend-request": LegendRequest,
             "decision-experiment": DecisionExperiment,
             "decision-protocol": DecisionProtocol,
             "decision-run": DecisionRun,

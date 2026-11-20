@@ -56,6 +56,33 @@ and seeds consume study reservations, including final evaluation and failed
 attempts. Holdout prompts remain sealed and are checked for overlap with registered
 prompt transformations.
 
+## Registered truncation scoring and inference (study schema 0.3)
+
+Study schema 0.3 adds three opt-in registrations. Studies that do not use them, and all
+0.1 and 0.2 studies, are scored exactly as described above.
+
+- `truncation: "fail"` scores an output cut off at the token limit as a task failure
+  instead of leaving it unscored. Reports then carry `finished` and `finished_passed`
+  counts, so finish rate and accuracy-when-finished can be read separately from accuracy.
+  Such reports and assessments identify their policy as `nrly-scorers/3`. Teacher-forced
+  diagnostics, failed inference, missing samples and integrity failures remain unscored.
+  Use this when running to the token limit is the behaviour under study.
+- `inference` registers a paired rule. Cases are the independent unit: each contributes
+  its mean paired difference across the registered seeds. The interval is a percentile
+  bootstrap over cases, and the p-value is an exact two-sided sign test on the nonzero
+  case differences. The verdict is `observed_improvement` only when the target effect is
+  superior to the original and to every registered control and comparator, and the
+  regression effect against the original is non-inferior within the registered margin.
+  One flipped case among many no longer yields `regressed`. At least six target and six
+  regression cases are required in both the development set and the holdout.
+- A comparator of `kind: "generation"` runs the unedited model under registered decoding
+  settings. Its seed is replaced by each study seed.
+
+The count-based comparison summaries are still reported beside the inference results.
+`no_change` under an inference rule means no supported target effect with regressions
+preserved; it is not an equivalence claim. See [levers.md](levers.md) for how the lever
+map uses these studies.
+
 ## Execution status and scientific verdict
 
 A completed, fully scored and comparable study can return the scientific verdict

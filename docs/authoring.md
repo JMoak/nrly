@@ -56,6 +56,30 @@ rejected by the worker. The result contains the patch ID, complete run, and eval
 `nrly patch export RUN_ID DESTINATION` packages a successful measured run; export
 pins its recorded model fingerprint. Export never replaces an occupied destination.
 
+## Portable patches
+
+A package written by `patch export` pins one runtime: its fingerprint covers the device,
+driver and library versions, so another machine rejects it. Add `--portable` to write a
+package that pins the checkpoint instead:
+
+```powershell
+nrly --root .nrly patch export RUN_ID .nrly/portable-patch --portable
+nrly --root .nrly patch inspect .nrly/portable-patch
+nrly --root .nrly patch run .nrly/portable-patch experiment.json
+```
+
+A portable package records the model, revision, load dtype and base weights digest, and
+the ordered operations. `patch run` first loads the model in a worker to learn the local
+runtime, refuses with `base_mismatch` if the weights or dtype differ, binds the operations
+to the local fingerprint, and then runs the experiment. Its result names the fingerprint
+it was bound to. In Python, `apply_patch_package` accepts both formats and verifies the
+weights digest before applying and after restoring. A run whose program is an identity
+or an activation intervention cannot be exported as a portable patch.
+
+`WeightProgram.remove_output_direction(target, W, d, strength=1)` compiles
+`W -= strength * unit(d) @ (unit(d).T @ W)` as one rank-one operation; it is the
+output-side counterpart of `remove_input_direction`.
+
 ## Calculations and tensor artifacts
 
 `WeightProgram` supports `scale`, dense `add`, sparse replacement/addition through

@@ -139,6 +139,17 @@ class WeightProgram:
             left = (weight @ unit).reshape(-1, 1)
         return self.low_rank(target, left, unit.reshape(1, -1), factor=-strength)
 
+    def remove_output_direction(
+        self, target: str, weights: ArrayLike, direction: ArrayLike, *, strength: float = 1,
+    ) -> Self:
+        """Compile W <- W - strength * d @ (d.T @ W) as a rank-one edit."""
+        weight, unit = _array(weights), unit_direction(direction)
+        if weight.ndim != 2 or weight.shape[0] != unit.size:
+            raise NrlyError("invalid_authoring", "weight rows must match the direction")
+        with np.errstate(over="ignore", invalid="ignore"):
+            right = (unit @ weight).reshape(1, -1)
+        return self.low_rank(target, unit.reshape(-1, 1), right, factor=-strength)
+
     def steer_key(
         self, target: str, weights: ArrayLike, key: ArrayLike, desired: ArrayLike,
     ) -> Self:

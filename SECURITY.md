@@ -38,6 +38,29 @@ not have a separate security backport commitment.
 - Programs are validated declarative operations, not arbitrary Python. Experiments
   can still consume substantial compute. The edited tensor-storage ceiling excludes
   original models, temporary buffers and activations.
+- Lever operations are CLI and trusted-Python only; no MCP tool exposes them. Deriving
+  a lever loads the model in the caller's process and reads whole parameters.
+- `nrly lever legend` is the one lever operation that uses the network. It makes
+  anonymous ranged requests to the Hugging Face Hub for one tensor of a caller-named
+  repository at an exact revision, and, only when label fetching is requested, requests
+  to Neuronpedia carrying a public feature identifier. Use `--local-file` to stay
+  offline. The dictionary reader parses the container itself and never unpickles or
+  loads code, but a pinned revision does not make a third-party dictionary trustworthy.
+  Feature labels are third-party text and are rendered as escaped data.
+
+## Lever map and portable packages
+
+A lever entry or portable patch pins a checkpoint by weights digest and is verified
+against the loaded model before any edit is bound to the local runtime. Digests and
+content addresses establish integrity only: an imported entry's status, verdict and
+replication records are claims by whoever produced them, not something this
+installation has reproduced. Re-run the referee locally before relying on one.
+
+Exported lever bundles contain the recipe's contrast prompts and the edit itself. The
+map and lever pages contain aggregates only, escape all entry text, load no network
+resources and run no script; their stylesheet is admitted by hash. A lever is a weight
+edit that changes model behaviour, so review what an edit removes before applying or
+sharing it.
 
 ## Data and exported artifacts
 

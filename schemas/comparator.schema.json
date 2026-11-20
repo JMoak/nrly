@@ -1,5 +1,94 @@
 {
   "$defs": {
+    "GenerationSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "max_new_tokens": {
+          "default": 32,
+          "maximum": 32768,
+          "minimum": 1,
+          "title": "Max New Tokens",
+          "type": "integer"
+        },
+        "temperature": {
+          "default": 0.0,
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "seed": {
+          "default": 0,
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "enable_thinking": {
+          "default": false,
+          "title": "Enable Thinking",
+          "type": "boolean"
+        },
+        "top_p": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 1,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top P"
+        },
+        "top_k": {
+          "anyOf": [
+            {
+              "maximum": 1000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top K"
+        },
+        "min_new_tokens": {
+          "anyOf": [
+            {
+              "maximum": 32768,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min New Tokens"
+        },
+        "repetition_penalty": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 10,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Repetition Penalty"
+        }
+      },
+      "title": "GenerationSpec",
+      "type": "object"
+    },
     "ModelSpec": {
       "additionalProperties": false,
       "properties": {
@@ -53,7 +142,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Operator-registered alternative; an external checkpoint may be fine-tuned elsewhere.",
+  "description": "Operator-registered alternative; an external checkpoint may be fine-tuned elsewhere.\n\nA ``generation`` comparator runs the unedited model under different decoding settings\n(for example thinking disabled or a repetition penalty). Its seed is replaced by each\nregistered study seed, so the stored seed must be the canonical zero.",
   "properties": {
     "name": {
       "maxLength": 120,
@@ -64,7 +153,8 @@
     "kind": {
       "enum": [
         "prompt",
-        "model"
+        "model",
+        "generation"
       ],
       "title": "Kind",
       "type": "string"
@@ -85,6 +175,17 @@
       "anyOf": [
         {
           "$ref": "#/$defs/ModelSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "generation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/GenerationSpec"
         },
         {
           "type": "null"

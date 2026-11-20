@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import inspect
 import json
+from collections.abc import Sequence
 from typing import cast
 
 import torch
@@ -10,8 +11,14 @@ import transformers
 from torch import nn
 from transformers import AutoModelForCausalLM, AutoTokenizer, PretrainedConfig
 
-from nrly.backends.torch_backend import TorchBackend, model_device, model_dtype
+from nrly.backends.torch_backend import (
+    MAX_OBSERVED_PROMPTS,
+    TorchBackend,
+    model_device,
+    model_dtype,
+)
 from nrly.contracts import (
+    CaptureSpec,
     CaseSpec,
     ContinuationScore,
     DiagnosticSpec,
@@ -19,6 +26,7 @@ from nrly.contracts import (
     ModelSpec,
     NrlyError,
 )
+from nrly.kernel import capture_activations
 from nrly.kernel.diagnostics import score_continuation
 
 
@@ -150,6 +158,56 @@ class HuggingFaceBackend(TorchBackend):
             else "stopped"
         )
         return output, int(input_tokens), len(generated), finish_reason
+
+    def last_token_activations(
+        self,
+        cases: Sequence[CaseSpec],
+        generation: GenerationSpec,
+        targets: Sequence[str],
+    ) -> list[dict[str, list[float]]]:
+        """Module outputs at each rendered prompt's final token; no generation, no edit.
+
+        Trusted local authoring only. The complete base state is verified once before
+        and once after the whole batch of single-prompt forward passes.
+        """
+        self._require_open()
+        if not cases or len(cases) > MAX_OBSERVED_PROMPTS or not 1 <= len(targets) <= 64:
+            raise NrlyError("invalid_request", "observe 1..4096 prompts at 1..64 modules")
+        if len(set(targets)) != len(targets):
+            raise NrlyError("invalid_request", "observed modules must be distinct")
+        self.verify_base_unchanged()
+        observed: list[dict[str, list[float]]] = []
+        try:
+            for case in cases:
+                inputs = self._encode_prompt(case, generation)
+                tokens = int(inputs["input_ids"].shape[-1])
+                self._check_context(tokens, 0)
+                specs = [
+                    CaptureSpec(
+                        target=target,
+                        max_elements=4096,
+                        token_positions=[tokens - 1],
+                        invocation="first",
+                    )
+                    for target in targets
+                ]
+                with capture_activations(self.model, specs) as recorded, torch.inference_mode():
+                    self.model(**inputs, use_cache=False, return_dict=True)
+                row: dict[str, list[float]] = {}
+                for target in targets:
+                    capture = recorded[target]
+                    if capture.selection_shape[:2] != [1, 1] or len(capture.values) != (
+                        capture.selection_shape[-1]
+                    ):
+                        raise NrlyError(
+                            "unsupported_operation",
+                            "observed modules must return [1, sequence, width<=4096] tensors",
+                        )
+                    row[target] = capture.values
+                observed.append(row)
+        finally:
+            self.verify_base_unchanged()
+        return observed
 
     def _diagnose(
         self, case: CaseSpec, generation: GenerationSpec, diagnostics: DiagnosticSpec

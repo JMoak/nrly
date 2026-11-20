@@ -12,6 +12,8 @@ export type ArmSummary = {
   "regression_passed": number;
   "seed"?: number | null;
   "groups"?: Array<StudyGroupSummary>;
+  "finished"?: number | null;
+  "finished_passed"?: number | null;
 };
 
 export type AttemptRecord = {
@@ -71,6 +73,7 @@ export type CaseEvaluation = {
   "score": number | null;
   "reason": string;
   "group"?: string | null;
+  "finished"?: boolean | null;
 };
 
 export type CaseSpec = {
@@ -94,10 +97,11 @@ export type ChatMessage = {
 
 export type ComparatorSpec = {
   "name": string;
-  "kind": "prompt" | "model";
+  "kind": "prompt" | "model" | "generation";
   "prefix"?: string;
   "suffix"?: string;
   "model"?: ModelSpec | null;
+  "generation"?: GenerationSpec | null;
 };
 
 export type ComparisonReport = {
@@ -149,6 +153,20 @@ export type EditRevision = {
   "id": string;
 };
 
+export type EffectEstimate = {
+  "cases": number;
+  "seeds": number;
+  "mean_difference": number;
+  "ci_low": number;
+  "ci_high": number;
+  "confidence": number;
+  "improved_cases": number;
+  "regressed_cases": number;
+  "tied_cases": number;
+  "sign_test_p": number;
+  "method"?: "case_percentile_bootstrap+exact_sign_test";
+};
+
 export type ErrorInfo = {
   "code": string;
   "message": string;
@@ -156,7 +174,8 @@ export type ErrorInfo = {
 
 export type EvaluationReport = {
   "schema_version"?: "0.1";
-  "scorer_version"?: "nrly-scorers/2";
+  "scorer_version"?: "nrly-scorers/2" | "nrly-scorers/3";
+  "truncation"?: "unscored" | "fail";
   "run_id": string;
   "scope": "engineering_fixture" | "real_model";
   "complete": boolean;
@@ -200,6 +219,8 @@ export type GroupSummary = {
   "failed": number;
   "unscored": number;
   "accuracy": number | null;
+  "finished"?: number | null;
+  "finished_passed"?: number | null;
 };
 
 export type HoldoutCommitment = {
@@ -207,6 +228,14 @@ export type HoldoutCommitment = {
   "count": number;
   "targets": number;
   "regressions": number;
+};
+
+export type InferenceRule = {
+  "schema_version"?: "nrly-inference/1";
+  "alpha"?: number;
+  "regression_margin"?: number;
+  "resamples"?: number;
+  "bootstrap_seed"?: number;
 };
 
 export type JsonValue = unknown;
@@ -247,6 +276,16 @@ export type PairedGroupSummary = {
   "variation": SeedVariation;
 };
 
+export type PairedInference = {
+  "reference": string;
+  "target": EffectEstimate;
+  "regression": EffectEstimate;
+  "target_superior": boolean;
+  "target_harmed": boolean;
+  "regression_non_inferior": boolean;
+  "regression_inferior": boolean;
+};
+
 export type PairedSummary = {
   "reference": string;
   "comparable": boolean;
@@ -264,6 +303,21 @@ export type PatchManifest = {
   "identity": ModelIdentity;
   "program": ProgramSpec;
   "revision"?: EditRevision | null;
+  "id": string;
+};
+
+export type PortableBase = {
+  "backend": string;
+  "model_id": string;
+  "revision": string;
+  "dtype": string;
+  "weights_sha256": string;
+};
+
+export type PortablePatchManifest = {
+  "schema_version"?: "nrly-patch/2";
+  "base": PortableBase;
+  "operations": Array<WeightOperationSpec>;
   "id": string;
 };
 
@@ -345,13 +399,14 @@ export type SequentialReport = {
 };
 
 export type StudyAssessment = {
-  "scorer_version"?: "nrly-scorers/2" | null;
+  "scorer_version"?: "nrly-scorers/2" | "nrly-scorers/3" | null;
   "verdict": "observed_improvement" | "no_change" | "regressed" | "inconclusive";
   "recommendation"?: "retain_original" | "candidate_supported";
   "scope": "engineering_fixture" | "real_model";
   "arms"?: Array<ArmSummary>;
   "comparisons"?: Array<PairedSummary>;
   "issues"?: Array<string>;
+  "inference"?: Array<PairedInference>;
 };
 
 export type StudyBudget = {
@@ -400,7 +455,7 @@ export type StudyRecord = {
 };
 
 export type StudySpec = {
-  "schema_version"?: "0.1" | "0.2";
+  "schema_version"?: "0.1" | "0.2" | "0.3";
   "name": string;
   "model"?: ModelSpec;
   "generation"?: GenerationSpec;
@@ -411,6 +466,8 @@ export type StudySpec = {
   "mutable_targets"?: Array<string> | null;
   "run_budget"?: BudgetSpec;
   "budget"?: StudyBudget;
+  "truncation"?: "unscored" | "fail";
+  "inference"?: InferenceRule | null;
 };
 
 export type StudyUsage = {
@@ -561,6 +618,12 @@ export type _PatchContent = {
   "identity": ModelIdentity;
   "program": ProgramSpec;
   "revision"?: EditRevision | null;
+};
+
+export type _PortablePatchContent = {
+  "schema_version"?: "nrly-patch/2";
+  "base": PortableBase;
+  "operations": Array<WeightOperationSpec>;
 };
 
 export type _RevisionContent = {

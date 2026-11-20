@@ -57,6 +57,32 @@
           },
           "title": "Groups",
           "type": "array"
+        },
+        "finished": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished"
+        },
+        "finished_passed": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished Passed"
         }
       },
       "required": [
@@ -71,6 +97,87 @@
         "regression_passed"
       ],
       "title": "ArmSummary",
+      "type": "object"
+    },
+    "EffectEstimate": {
+      "additionalProperties": false,
+      "description": "Candidate minus reference on one role's cases; positive favours the candidate.",
+      "properties": {
+        "cases": {
+          "minimum": 1,
+          "title": "Cases",
+          "type": "integer"
+        },
+        "seeds": {
+          "minimum": 1,
+          "title": "Seeds",
+          "type": "integer"
+        },
+        "mean_difference": {
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Mean Difference",
+          "type": "number"
+        },
+        "ci_low": {
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Ci Low",
+          "type": "number"
+        },
+        "ci_high": {
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Ci High",
+          "type": "number"
+        },
+        "confidence": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "improved_cases": {
+          "minimum": 0,
+          "title": "Improved Cases",
+          "type": "integer"
+        },
+        "regressed_cases": {
+          "minimum": 0,
+          "title": "Regressed Cases",
+          "type": "integer"
+        },
+        "tied_cases": {
+          "minimum": 0,
+          "title": "Tied Cases",
+          "type": "integer"
+        },
+        "sign_test_p": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Sign Test P",
+          "type": "number"
+        },
+        "method": {
+          "const": "case_percentile_bootstrap+exact_sign_test",
+          "default": "case_percentile_bootstrap+exact_sign_test",
+          "title": "Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cases",
+        "seeds",
+        "mean_difference",
+        "ci_low",
+        "ci_high",
+        "confidence",
+        "improved_cases",
+        "regressed_cases",
+        "tied_cases",
+        "sign_test_p"
+      ],
+      "title": "EffectEstimate",
       "type": "object"
     },
     "PairedGroupSummary": {
@@ -104,6 +211,49 @@
         "variation"
       ],
       "title": "PairedGroupSummary",
+      "type": "object"
+    },
+    "PairedInference": {
+      "additionalProperties": false,
+      "description": "One registered reference arm against the candidate under an InferenceRule.",
+      "properties": {
+        "reference": {
+          "title": "Reference",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/EffectEstimate"
+        },
+        "regression": {
+          "$ref": "#/$defs/EffectEstimate"
+        },
+        "target_superior": {
+          "title": "Target Superior",
+          "type": "boolean"
+        },
+        "target_harmed": {
+          "title": "Target Harmed",
+          "type": "boolean"
+        },
+        "regression_non_inferior": {
+          "title": "Regression Non Inferior",
+          "type": "boolean"
+        },
+        "regression_inferior": {
+          "title": "Regression Inferior",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "reference",
+        "target",
+        "regression",
+        "target_superior",
+        "target_harmed",
+        "regression_non_inferior",
+        "regression_inferior"
+      ],
+      "title": "PairedInference",
       "type": "object"
     },
     "PairedSummary": {
@@ -288,7 +438,10 @@
     "scorer_version": {
       "anyOf": [
         {
-          "const": "nrly-scorers/2",
+          "enum": [
+            "nrly-scorers/2",
+            "nrly-scorers/3"
+          ],
           "type": "string"
         },
         {
@@ -344,6 +497,13 @@
         "type": "string"
       },
       "title": "Issues",
+      "type": "array"
+    },
+    "inference": {
+      "items": {
+        "$ref": "#/$defs/PairedInference"
+      },
+      "title": "Inference",
       "type": "array"
     }
   },

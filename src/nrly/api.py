@@ -441,7 +441,8 @@ class Application:
         if registered is None:
             raise NrlyError("comparator_not_found", "no comparator registered with that name")
         identity = study.comparator_identities.get(comparator)
-        if registered.kind == "prompt":
+        if registered.kind != "model":
+            # Prompt and generation comparators run the study's own unedited model.
             identity = study.model_identity
         text = json.dumps(
             {
@@ -647,7 +648,7 @@ def study_summary(
                 "model_fingerprint": record.comparator_identities[item.name].fingerprint
                 if item.name in record.comparator_identities
                 else record.model_identity.fingerprint
-                if item.kind == "prompt" and record.model_identity
+                if item.kind != "model" and record.model_identity
                 else None,
             }
             for item in record.spec.comparators

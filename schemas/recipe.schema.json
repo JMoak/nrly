@@ -1,0 +1,346 @@
+{
+  "$defs": {
+    "CaseSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "input": {
+          "anyOf": [
+            {
+              "maxLength": 100000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected"
+        },
+        "scorer": {
+          "default": "exact",
+          "enum": [
+            "exact",
+            "numeric",
+            "final_number"
+          ],
+          "title": "Scorer",
+          "type": "string"
+        },
+        "tolerance": {
+          "default": 1e-06,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Tolerance",
+          "type": "number"
+        },
+        "split": {
+          "default": "discovery",
+          "enum": [
+            "discovery",
+            "validation",
+            "test"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "role": {
+          "default": "target",
+          "enum": [
+            "target",
+            "regression"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "messages": {
+          "items": {
+            "$ref": "#/$defs/ChatMessage"
+          },
+          "maxItems": 128,
+          "title": "Messages",
+          "type": "array"
+        },
+        "continuation": {
+          "anyOf": [
+            {
+              "maxLength": 100000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Continuation"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group"
+        },
+        "adapter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaskAdapterSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "CaseSpec",
+      "type": "object"
+    },
+    "ChatMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "system",
+            "user",
+            "assistant"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "content": {
+          "maxLength": 100000,
+          "minLength": 1,
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "ChatMessage",
+      "type": "object"
+    },
+    "LeverSite": {
+      "additionalProperties": false,
+      "description": "One edited tensor and the module whose activation carries the direction.",
+      "properties": {
+        "parameter": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Parameter",
+          "type": "string"
+        },
+        "module": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Module",
+          "type": "string"
+        },
+        "side": {
+          "default": "output",
+          "enum": [
+            "output",
+            "input"
+          ],
+          "title": "Side",
+          "type": "string"
+        },
+        "layer": {
+          "anyOf": [
+            {
+              "maximum": 4095,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Layer"
+        }
+      },
+      "required": [
+        "parameter",
+        "module"
+      ],
+      "title": "LeverSite",
+      "type": "object"
+    },
+    "TaskAdapterSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "nrly-tasks/1",
+          "default": "nrly-tasks/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "multiple_choice",
+            "json",
+            "instruction_constraints"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "choices": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 26,
+          "title": "Choices",
+          "type": "array"
+        },
+        "required": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Required",
+          "type": "array"
+        },
+        "forbidden": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Forbidden",
+          "type": "array"
+        },
+        "max_chars": {
+          "anyOf": [
+            {
+              "maximum": 1000000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Chars"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "TaskAdapterSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A re-runnable derivation; coordinates expire with a checkpoint, recipes do not.\n\n``positive`` prompts exhibit the behaviour and ``negative`` prompts do not. Even\npositions of each list fit a direction and odd positions score it, so the site is\nnever chosen on the data that produced its direction.",
+  "properties": {
+    "schema_version": {
+      "const": "nrly-recipe/1",
+      "default": "nrly-recipe/1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "kind": {
+      "const": "difference_of_means",
+      "default": "difference_of_means",
+      "title": "Kind",
+      "type": "string"
+    },
+    "behavior": {
+      "pattern": "^[a-z0-9][a-z0-9._+-]{1,79}$",
+      "title": "Behavior",
+      "type": "string"
+    },
+    "positive": {
+      "items": {
+        "$ref": "#/$defs/CaseSpec"
+      },
+      "maxItems": 2048,
+      "minItems": 4,
+      "title": "Positive",
+      "type": "array"
+    },
+    "negative": {
+      "items": {
+        "$ref": "#/$defs/CaseSpec"
+      },
+      "maxItems": 2048,
+      "minItems": 4,
+      "title": "Negative",
+      "type": "array"
+    },
+    "sites": {
+      "items": {
+        "$ref": "#/$defs/LeverSite"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "title": "Sites",
+      "type": "array"
+    },
+    "selection": {
+      "const": "held_out_separation",
+      "default": "held_out_separation",
+      "title": "Selection",
+      "type": "string"
+    },
+    "position": {
+      "const": "last_prompt_token",
+      "default": "last_prompt_token",
+      "title": "Position",
+      "type": "string"
+    },
+    "enable_thinking": {
+      "default": false,
+      "title": "Enable Thinking",
+      "type": "boolean"
+    },
+    "edit": {
+      "const": "remove_output_direction",
+      "default": "remove_output_direction",
+      "title": "Edit",
+      "type": "string"
+    }
+  },
+  "required": [
+    "behavior",
+    "positive",
+    "negative",
+    "sites"
+  ],
+  "title": "RecipeSpec",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

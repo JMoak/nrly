@@ -11,6 +11,13 @@ from nrly.contracts import CaseSpec, Contract, RunRecord, SampleResult, digest
 from nrly.evaluation.adapters import score_adapter
 
 SCORER_VERSION: Literal["nrly-scorers/2"] = "nrly-scorers/2"
+# nrly-scorers/2 plus a registered policy that scores token-limit truncation as failure.
+TRUNCATION_SCORER_VERSION: Literal["nrly-scorers/3"] = "nrly-scorers/3"
+TruncationPolicy = Literal["unscored", "fail"]
+_TRUNCATED_AS_FAILURE = (
+    "inference output was truncated at the token limit; "
+    "scored as a failure under the registered truncation policy"
+)
 
 NUMBER = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
 _WHOLE_NUMBER = re.compile(rf"\s*({NUMBER})\s*\Z")
@@ -28,6 +35,8 @@ class CaseEvaluation(Contract):
     score: float | None
     reason: str
     group: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    # Set only under truncation="fail": whether the output ended before the token limit.
+    finished: bool | None = Field(default=None, exclude_if=lambda v: v is None)
 
 
 class GroupSummary(Contract):
@@ -37,11 +46,18 @@ class GroupSummary(Contract):
     failed: int
     unscored: int
     accuracy: float | None
+    # Set only under truncation="fail". Finish rate is finished / total; accuracy when
+    # finished is finished_passed / finished.
+    finished: int | None = Field(default=None, ge=0, exclude_if=lambda v: v is None)
+    finished_passed: int | None = Field(default=None, ge=0, exclude_if=lambda v: v is None)
 
 
 class EvaluationReport(Contract):
     schema_version: Literal["0.1"] = "0.1"
-    scorer_version: Literal["nrly-scorers/2"] = SCORER_VERSION
+    scorer_version: Literal["nrly-scorers/2", "nrly-scorers/3"] = SCORER_VERSION
+    truncation: Literal["unscored", "fail"] = Field(
+        default="unscored", exclude_if=lambda v: v == "unscored"
+    )
     run_id: str
     scope: Literal["engineering_fixture", "real_model"]
     complete: bool
@@ -70,8 +86,12 @@ class ComparisonReport(Contract):
     candidate: EvaluationReport
 
 
-def evaluate_run(run: RunRecord) -> EvaluationReport:
-    """Score recorded inference; infrastructure failures are never task passes."""
+def evaluate_run(run: RunRecord, truncation: TruncationPolicy = "unscored") -> EvaluationReport:
+    """Score recorded inference; infrastructure failures are never task passes.
+
+    ``truncation="fail"`` is a registered policy: an output cut off at the token limit
+    is a task failure instead of an unscored case, and finish counts are reported.
+    """
     issues = _run_issues(run)
     counts = Counter(sample.case_id for sample in run.samples)
     expected_ids = {case.id for case in run.spec.cases}
@@ -81,28 +101,35 @@ def evaluate_run(run: RunRecord) -> EvaluationReport:
         if count > 1:
             issues.append(f"duplicate sample: {case_id}")
     samples = {sample.case_id: sample for sample in run.samples}
-    cases = [_evaluate_case(case, samples.get(case.id), run, issues) for case in run.spec.cases]
-    summary = _summarize(cases)
+    cases = [
+        _evaluate_case(case, samples.get(case.id), run, issues, truncation)
+        for case in run.spec.cases
+    ]
+    summary = _summarize(cases, truncation)
     return EvaluationReport(
+        scorer_version=TRUNCATION_SCORER_VERSION if truncation == "fail" else SCORER_VERSION,
+        truncation=truncation,
         run_id=run.id,
         scope="engineering_fixture" if run.spec.model.backend == "tiny" else "real_model",
         complete=not issues and summary.unscored == 0,
         issues=issues,
         summary=summary,
-        targets=_summarize([case for case in cases if case.role == "target"]),
-        regressions=_summarize([case for case in cases if case.role == "regression"]),
+        targets=_summarize([case for case in cases if case.role == "target"], truncation),
+        regressions=_summarize([case for case in cases if case.role == "regression"], truncation),
         cases=cases,
         groups={
-            group: _summarize([case for case in cases if case.group == group])
+            group: _summarize([case for case in cases if case.group == group], truncation)
             for group in sorted({case.group for case in cases if case.group is not None})
         },
     )
 
 
-def compare_runs(baseline: RunRecord, candidate: RunRecord) -> ComparisonReport:
+def compare_runs(
+    baseline: RunRecord, candidate: RunRecord, truncation: TruncationPolicy = "unscored"
+) -> ComparisonReport:
     """Return observed paired changes only for compatible, fully scored runs."""
-    baseline_report = evaluate_run(baseline)
-    candidate_report = evaluate_run(candidate)
+    baseline_report = evaluate_run(baseline, truncation)
+    candidate_report = evaluate_run(candidate, truncation)
     issues = _comparison_issues(baseline, candidate)
     if not baseline_report.complete:
         issues.append("baseline is not a complete scored run")
@@ -179,13 +206,21 @@ def _evaluate_case(
     sample: SampleResult | None,
     run: RunRecord,
     run_issues: list[str],
+    truncation: TruncationPolicy,
 ) -> CaseEvaluation:
     outcome: Literal["pass", "fail", "unscored"] = "unscored"
     score: float | None = None
-    reason = _sample_issue(case, sample, run, run_issues)
+    finished: bool | None = None
+    reason = _sample_issue(case, sample, run, run_issues, truncation)
     if reason is None and sample is not None and sample.output is not None:
         passed, reason = _score(case, sample.output)
+        # A case the scorer cannot adjudicate stays unscored even when it was cut off:
+        # an unusable reference is never turned into a model failure.
         if passed is not None:
+            if truncation == "fail":
+                finished = not _truncated(sample)
+                if not finished:
+                    passed, reason = False, _TRUNCATED_AS_FAILURE
             outcome = "pass" if passed else "fail"
             score = 1.0 if passed else 0.0
     return CaseEvaluation(
@@ -201,7 +236,12 @@ def _evaluate_case(
         else case.scorer,
         score=score,
         reason=reason or "unscored",
+        finished=finished,
     )
+
+
+def _truncated(sample: SampleResult) -> bool:
+    return sample.truncated is True or sample.finish_reason == "length"
 
 
 def _sample_issue(
@@ -209,6 +249,7 @@ def _sample_issue(
     sample: SampleResult | None,
     run: RunRecord,
     run_issues: list[str],
+    truncation: TruncationPolicy,
 ) -> str | None:
     if run_issues:
         return "run integrity or completion checks failed"
@@ -221,7 +262,7 @@ def _sample_issue(
         return "inference provenance does not match the model backend"
     if sample.output is None:
         return "inference output is missing"
-    if sample.truncated is True or sample.finish_reason == "length":
+    if truncation == "unscored" and _truncated(sample):
         return "inference output was truncated"
     if sample.finish_reason == "teacher_forced" or run.spec.diagnostics is not None:
         return "teacher-forced diagnostics are not task inference"
@@ -278,10 +319,12 @@ def _parse_number(value: str, *, final: bool) -> Decimal | None:
     return number if number.is_finite() else None
 
 
-def _summarize(cases: list[CaseEvaluation]) -> GroupSummary:
+def _summarize(cases: list[CaseEvaluation], truncation: TruncationPolicy) -> GroupSummary:
     passed = sum(case.outcome == "pass" for case in cases)
     failed = sum(case.outcome == "fail" for case in cases)
     unscored = len(cases) - passed - failed
+    # ``finished`` is set only on scored cases, so unscored cases never count as finished.
+    finished = [case for case in cases if case.finished is True]
     return GroupSummary(
         total=len(cases),
         scored=passed + failed,
@@ -289,6 +332,10 @@ def _summarize(cases: list[CaseEvaluation]) -> GroupSummary:
         failed=failed,
         unscored=unscored,
         accuracy=passed / len(cases) if cases and not unscored else None,
+        finished=len(finished) if truncation == "fail" else None,
+        finished_passed=sum(case.outcome == "pass" for case in finished)
+        if truncation == "fail"
+        else None,
     )
 
 
