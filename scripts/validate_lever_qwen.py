@@ -135,7 +135,13 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--cache", type=Path, default=Path(".cache/models"))
     parser.add_argument("--evidence", type=Path, help="write the shareable record here")
+    parser.add_argument(
+        "--layers", default="0-27", help="inclusive range of candidate MLP layers, e.g. 20-27"
+    )
     args = parser.parse_args()
+    first, last = (int(part) for part in args.layers.split("-"))
+    if not 0 <= first <= last <= 27:
+        raise ValueError("candidate layers must lie within 0-27")
     if args.output.exists() or (args.evidence is not None and args.evidence.exists()):
         raise FileExistsError("keep prior attempts; choose new output directories")
     os.environ["HF_HUB_OFFLINE"] = "1"
@@ -172,7 +178,7 @@ def main() -> None:
                 module=f"model.layers.{layer}.mlp",
                 layer=layer,
             )
-            for layer in range(28)
+            for layer in range(first, last + 1)
         ],
     )
     generation = GenerationSpec(max_new_tokens=8, temperature=0.0, enable_thinking=False)
@@ -227,6 +233,7 @@ def main() -> None:
         "model": model.model_dump(mode="json"),
         "base": final.base.model_dump(mode="json"),
         "behavior": final.behavior,
+        "candidate_layers": args.layers,
         "entry_id": final.id,
         "history": [item.id for item in levers.history(final.id)],
         "status": final.status,

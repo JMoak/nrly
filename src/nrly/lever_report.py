@@ -882,7 +882,8 @@ def _verdict_section(entry: LeverEntry) -> str:
                 + _td(_effect(target))
                 + _td(_p(target.sign_test_p))
                 + _td(f"{target.improved_cases} / {target.regressed_cases} / {target.tied_cases}")
-                + _td("harmed" if pair.target_harmed else beat)
+                # The candidate is significantly worse than this reference on targets.
+                + _td("worse" if pair.target_harmed else beat)
                 + _td(_effect(pair.regression))
                 + _td("inferior" if pair.regression_inferior else spared)
                 + "</tr>"
